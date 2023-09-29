@@ -22,23 +22,22 @@ class LoginModel {
 
   static disminuirIntentos = ({ user }) => {
     const resultado = this.#encuentraIndice({ user });
-    if (!resultado) return false;
+    if (!resultado && resultado !== 0) return false;
 
-    if (this.verificaBloqueo({ user })) return;
+    if (this.verificaBloqueo({ user })) return false;
 
     datos[resultado].intentos = Number(datos[resultado].intentos) - 1;
   };
 
   static verificaBloqueo = ({ user }) => {
     const indice = this.#encuentraIndice({ user });
-    if (!indice) return false;
+    if (!indice && indice !== 0) return false;
 
     if (Number(datos[indice].intentos) <= 0) return true;
     else return false;
   };
 
   static #encuentraIndice = ({ user }) => {
-    
     const indice = datos.findIndex((dato) => dato.user == user);
 
     if (indice === -1) return false;
@@ -47,17 +46,17 @@ class LoginModel {
   };
 
   static restaurarIntentos = ({ user }) => {
-    const indice = this.#encuentraIndice({ user })
-    if(!indice) return false
-    datos[indice].intentos = 3
-  }
+    const indice = this.#encuentraIndice({ user });
+    if (!indice) return false;
+    datos[indice].intentos = 3;
+  };
 
   static retornarDatos = ({ user, password }) => {
     if (this.userExist({ user }) && this.passwordCorrect({ user, password })) {
-      const indice = this.#encuentraIndice({ user })
-      return datos[indice]
+      const indice = this.#encuentraIndice({ user });
+      return datos[indice];
     }
-  }
+  };
 }
 
-export default LoginModel
+export default LoginModel;
