@@ -1,6 +1,6 @@
-POST http://localhost:7878/login HTTP/1.1
-
+POST http://localhost:7878/login
 Content-Type: application/json
+
 {
     "user": "enmarcm",
     "password": "enmanuel"

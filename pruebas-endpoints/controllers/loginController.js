@@ -8,34 +8,32 @@ class LoginController {
 
     const { user, password } = req.body;
     if (!user || !password) return res.status(400).send("Faltan datos");
-    console.log(user, password)
 
-    // const userExist = LoginModel.userExist({ user });
-    // if (!userExist) return res.status(404).send("El usuario no existe");
+    const userExist = LoginModel.userExist({ user });
+    if (!userExist) return res.status(404).send("El usuario no existe");
 
-    // const passwordCorrect = LoginModel.passwordCorrect({ user, password });
-    // if (!passwordCorrect) {
-    //   LoginModel.disminuirIntentos({ user });
-    //   return res.status(400).send("Contraseña incorrecta");
-    // }
+    const passwordCorrect = LoginModel.passwordCorrect({ user, password });
+    if (!passwordCorrect) {
+      LoginModel.disminuirIntentos({ user });
+      return res.status(400).send("Contraseña incorrecta");
+    }
 
-    // const usuarioBloqueado = LoginModel.verificaBloqueo({ user });
-    // if (usuarioBloqueado) return res.status(400).send("Usuario bloqueado");
+    const usuarioBloqueado = LoginModel.verificaBloqueo({ user });
+    if (usuarioBloqueado) return res.status(400).send("Usuario bloqueado");
 
-    // LoginModel.restaurarIntentos({ user });
+    LoginModel.restaurarIntentos({ user });
 
     // //Queria destructurar pero ya tengo una constante user y password
-    // const datos = LoginModel.retornarDatos({ user, password });
+    const datos = LoginModel.retornarDatos({ user, password });
 
-    // MAP_SESSIONS.set(req.sessionID, datos.user);
-    // req.session = {
-    //   user: datos.user,
-    //   rol: datos.rol,
-    //   email: datos.email,
-    //   admin: datos.admin,
-    // };
+    MAP_SESSIONS.set(req.sessionID, datos.user);
 
-    // res.send("Te has logueado correctamente");
+    req.session.user = datos.user;
+    req.session.rol = datos.rol
+    req.session.admin = datos.admin
+    req.session.email = datos.email
+
+    res.status(201).send("Te has logueado correctamente");
   };
 }
 export default LoginController;

@@ -38,7 +38,8 @@ class LoginModel {
   };
 
   static #encuentraIndice = ({ user }) => {
-    const indice = datos.indexOf((dato) => dato.user === user);
+    
+    const indice = datos.findIndex((dato) => dato.user == user);
 
     if (indice === -1) return false;
 
