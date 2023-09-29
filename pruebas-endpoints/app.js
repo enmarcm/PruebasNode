@@ -7,6 +7,7 @@ const PORT = process.env.PORT ?? 7878;
 const app = express();
 app.disable("x-powered-by");
 app.use(express.json());
+
 app.use(midCors);
 
 app.use("/login", loginRouter);
