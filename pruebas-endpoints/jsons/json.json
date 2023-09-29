@@ -3,6 +3,8 @@
         "user": "enmarcm",
         "rol": "admin",
         "password": "enmanuel",
-        "email": "theenmanuel123@gmail.com"
+        "email": "theenmanuel123@gmail.com",
+        "admin": true,
+        "intentos": 3
     }
 ]
