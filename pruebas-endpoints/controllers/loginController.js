@@ -31,7 +31,7 @@ class LoginController {
     req.session.user = datos.user;
     req.session.rol = datos.rol;
     req.session.admin = datos.admin;
-    req.session.email = datos.email;
+    req.session.email = datos.email
 
     res.status(201).send("Te has logueado correctamente");
   };

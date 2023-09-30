@@ -3,7 +3,8 @@ import MAP_SESSIONS from "../utils/mapSessions.js";
 const logoutRouter = Router()
 
 logoutRouter.post("/", (req, res) => {
-    const {sessionID, session} = req.body
+    const { sessionID, session } = req
+    console.log(req.body.hola)
     if(!session || !sessionID) return res.send("No tiene una sesion iniciada")
 
     req.session.destroy()
