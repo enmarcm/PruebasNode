@@ -12,11 +12,7 @@ app.use(express.json());
 
 app.use(midCors);
 
-app.use(session({
-    secret: "sesionprueba",
-    saveUninitialized: true,
-    resave: false,
-}))
+console.log(session.Session)
 
 app.use("/login", loginRouter)
 app.use("/logout", logoutRouter)
