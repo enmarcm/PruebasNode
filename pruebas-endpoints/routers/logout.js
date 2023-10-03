@@ -1,14 +1,12 @@
 import { Router } from "express";
-import MAP_SESSIONS from "../utils/mapSessions.js";
+import iSession from "../iSession.js";
 const logoutRouter = Router()
 
 logoutRouter.post("/", (req, res) => {
-    const { sessionID, session } = req
-    console.log(req.body.hola)
-    if(!session || !sessionID) return res.send("No tiene una sesion iniciada")
+    console.log(req.session)
+    if(!iSession.sessionExist(req)) return res.send("No tiene una sesion iniciada")
 
-    req.session.destroy()
-    MAP_SESSIONS.delete(sessionID)
+    iSession.destroySession(req)
     return res.send("Se cerro la sesion")
 })
 

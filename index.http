@@ -2,10 +2,20 @@ POST http://localhost:7878/login
 Content-Type: application/json
 
 {
-    "user": "enmarcm",
+    "user": "asd",
     "password": "enmanuel"
 }
 
 ###SIGUIENTE
 
 POST http://localhost:7878/logout
+
+
+###TERCERAS PRUEBAS
+POST http://localhost:9923/login
+Content-Type: application/json
+
+{
+    "user": "enmanuel",
+    "password": "enmanuel"
+}

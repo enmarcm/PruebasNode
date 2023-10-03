@@ -1,10 +1,9 @@
 import LoginModel from "../model/loginModel.js";
-import MAP_SESSIONS from "../utils/mapSessions.js";
+import iSession from "../iSession.js";
 
 class LoginController {
   static loginPost = (req, res) => {
-    if (MAP_SESSIONS.has(req.sessionID) && req.session)
-      return res.status(400).send("Ya estas logueado");
+    if (iSession.sessionExist(req)) return res.status(400).send("Ya estas logueado");
 
     const { user, password } = req.body;
     if (!user || !password) return res.status(400).send("Faltan datos");
@@ -23,17 +22,20 @@ class LoginController {
 
     LoginModel.restaurarIntentos({ user });
 
-    //Queria destructurar pero ya tengo una constante user y password
     const datos = LoginModel.retornarDatos({ user, password });
 
-    MAP_SESSIONS.set(req.sessionID, datos.user);
+    const infoUser = {
+      user: datos.user,
+      rol: datos.rol,
+      admin: datos.admin,
+      email: datos.email,
+    };
 
-    req.session.user = datos.user;
-    req.session.rol = datos.rol;
-    req.session.admin = datos.admin;
-    req.session.email = datos.email
-
-    res.status(201).send("Te has logueado correctamente");
+    if (iSession.createSesion({ req, infoUser })) {
+      return res.status(201).send("Te has logueado correctamente");
+    } else {
+      return res.status(400).send("Ocurrio un error al momento de loguear");
+    }
   };
 }
 export default LoginController;
