@@ -1,9 +1,10 @@
 import express from "express";
 import midCors from "./middlewares/cors.js";
 import midNotFound from "./middlewares/notFound.js";
-import { midAuthUser } from "./middlewares/midAuthUser.js";
+import midAuthUser from "./middlewares/midAuthUser.js";
 import loginRouter from "./routers/login.js";
 import logoutRouter from "./routers/logout.js";
+import contentRouter from "./routers/content.js";
 import iSession from "./sessions/iSession.js";
 const PORT = process.env.PORT ?? 7878;
 
@@ -15,13 +16,9 @@ app.use(midCors);
 app.use(iSession.loadSession);
 app.use("/login", midAuthUser, loginRouter);
 
-app.use(iSession.midSessionExist)
+app.use(iSession.midSessionExist);
 app.use("/logout", logoutRouter);
-app.get("/content", (req, res) => {
-    console.log(req.session)
-    res.json({ content: "contenido" })
-});
-
+app.use("/content", contentRouter)
 //TODO:
 // app.use("/olvidoDatos", olvidoDatosRouter)
 // app.use("/solicitarPreguntas", solicitarPreguntasRouter)

@@ -18,7 +18,7 @@ class LoginController {
     if (!userExist) return res.status(404).send("El usuario no existe");
   };
 
-  static #verifyBlockedUser = (req, res) => {
+  static verifyBlockedUser = (req, res) => {
     const usuarioBloqueado = LoginModel.verificaBloqueo({
       user: req.body.user,
     });
@@ -37,10 +37,11 @@ class LoginController {
   };
 
   static loginPost = (req, res) => {
+    console.log(req.session)
     if (this.#verifySessionExist(req, res)) return;
     if (this.#verifyData(req, res)) return;
     if (this.verifyUser(req, res)) return;
-    if (this.#verifyBlockedUser(req, res)) return;
+    if (this.verifyBlockedUser(req, res)) return;
     if (this.verifyPassword(req, res)) return;
     LoginModel.restaurarIntentos({ user: req.body.user });
 
