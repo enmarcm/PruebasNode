@@ -10,14 +10,11 @@ class Session {
   createSesion = ({ req, infoUser }) => {
     if (this.sessionExist(req)) return false;
 
-    const newSession = {
-      ...req.session,
-      ...infoUser,
-    };
+    for (const key in infoUser) {
+      req.session[key] = infoUser[key];
+    }
 
-    req.session = newSession;
-
-    console.log(req.session);
+    return true;
   };
 
   destroySession = (req) => {
@@ -28,6 +25,7 @@ class Session {
     if (req.session && req.session?.user) return true;
     return false;
   };
+
   updateSession = ({ req, infoUser }) => {
     if (this.sessionExist(req)) return false;
 

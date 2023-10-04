@@ -18,6 +18,7 @@ class Session {
   };
 
   destroySession = (req) => {
+    if(!this.sessionExist(req)) return false;
     req.session.destroy();
   };
 
@@ -25,6 +26,11 @@ class Session {
     if (req.session && req.session?.user) return true;
     return false;
   };
+
+  midSessionExist = (req, res, next) => {
+    if (this.sessionExist(req)) return next();
+    res.status(401).send("No estas logueado");
+  }
 
   updateSession = ({ req, infoUser }) => {
     if (this.sessionExist(req)) return false;
