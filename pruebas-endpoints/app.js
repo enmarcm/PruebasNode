@@ -1,3 +1,9 @@
+/**
+ * @file app.js the main file
+ * @author Enmanuel Colina <theenmanuel123@gmail.com>
+ * @see {@link https://github.com/enmarcm}
+ */
+
 import express from "express";
 import midCors from "./middlewares/cors.js";
 import midNotFound from "./middlewares/notFound.js";

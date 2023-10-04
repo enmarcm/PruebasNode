@@ -1,5 +1,10 @@
 import session from "express-session";
 class Session {
+  /**
+   * Constructor de la clase session
+   * @param {Obj} objConfig
+   * @param {Obj} objConfig.config 
+   */
   constructor({ config }) {
     this.config = config;
     this.session = session(config);

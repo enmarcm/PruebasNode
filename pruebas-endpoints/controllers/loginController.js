@@ -1,6 +1,9 @@
 import LoginModel from "../model/loginModel.js";
 import iSession from "../sessions/iSession.js";
 
+/**
+ * Esta clase es la encargada de manejar todos los metodos encargados del controlador del login
+ */
 class LoginController {
   static #verifySessionExist = (req, res) => {
     if (iSession.sessionExist(req))
@@ -67,7 +70,7 @@ class LoginController {
     if (iSession.createSesion({ req, infoUser })) {
       return res.status(201).send("Te has logueado correctamente");
     } else {
-      res.status(400).send("Ocurrio un error al momento de loguear");
+      return res.status(400).send("Ocurrio un error al momento de loguear");
     }
   };
 }
