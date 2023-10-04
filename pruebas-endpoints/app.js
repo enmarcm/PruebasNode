@@ -14,7 +14,13 @@ app.use(midCors);
 
 app.use(iSession.loadSession);
 app.use("/login", midAuthUser, loginRouter);
-app.use("/logout", iSession.midSessionExist, logoutRouter);
+
+app.use(iSession.midSessionExist)
+app.use("/logout", logoutRouter);
+app.get("/content", (req, res) => {
+    console.log(req.session)
+    res.json({ content: "contenido" })
+});
 
 //TODO:
 // app.use("/olvidoDatos", olvidoDatosRouter)

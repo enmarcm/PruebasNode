@@ -29,7 +29,7 @@ class Session {
 
   midSessionExist = (req, res, next) => {
     if (this.sessionExist(req)) return next();
-    res.status(401).send("No estas logueado");
+    res.status(401).send("No tienes sesion activa");
   }
 
   updateSession = ({ req, infoUser }) => {
