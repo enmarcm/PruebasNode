@@ -2,7 +2,6 @@ import LoginModel from "../model/loginModel.js";
 import iSession from "../sessions/iSession.js";
 
 class LoginController {
-
   static #verifySessionExist = (req, res) => {
     if (iSession.sessionExist(req))
       return res.status(400).send("Ya estas logueado");
@@ -36,13 +35,21 @@ class LoginController {
     }
   };
 
-  static loginPost = (req, res) => {
-    console.log(req.session)
+  static desbloquearUsuario = ({user}) =>  LoginModel.desbloquearUsuario({ user });
+
+  static middlewareAuth = (req, res, next) => {
     if (this.#verifySessionExist(req, res)) return;
     if (this.#verifyData(req, res)) return;
     if (this.verifyUser(req, res)) return;
     if (this.verifyBlockedUser(req, res)) return;
     if (this.verifyPassword(req, res)) return;
+
+    next();
+  };
+
+  static loginPost = (req, res) => {
+    console.log(req.session);
+
     LoginModel.restaurarIntentos({ user: req.body.user });
 
     const datos = LoginModel.retornarDatos({
@@ -56,7 +63,6 @@ class LoginController {
       admin: datos.admin,
       email: datos.email,
     };
-  
 
     if (iSession.createSesion({ req, infoUser })) {
       return res.status(201).send("Te has logueado correctamente");

@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
     "user": "enmarcm",
-    "password": "enmanuesl"
+    "password": "enmanuels"
 }
 
 ###SIGUIENTE
@@ -12,6 +12,15 @@ POST http://localhost:7878/logout
 
 ###CONTENIDO
 GET http://localhost:7878/content
+
+###DESBLOQUEO
+POST http://localhost:7878/desbloquear
+Content-Type: application/json
+
+{
+    "user": "enmarcm"
+}
+
 
 
 ###TERCERAS PRUEBAS

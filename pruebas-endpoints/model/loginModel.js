@@ -4,7 +4,6 @@ const datos = importJson({ path: "../jsons/json.json" });
 class LoginModel {
   static userExist = ({ user }) => {
     const resultado = datos.find((dato) => dato.user === user);
-
     if (!resultado) return false;
 
     return true;
@@ -47,7 +46,7 @@ class LoginModel {
 
   static restaurarIntentos = ({ user }) => {
     const indice = this.#encuentraIndice({ user });
-    if (!indice) return false;
+    if (!indice && indice != 0) return false;
     datos[indice].intentos = 3;
   };
 
@@ -55,6 +54,12 @@ class LoginModel {
     if (this.userExist({ user }) && this.passwordCorrect({ user, password })) {
       const indice = this.#encuentraIndice({ user });
       return datos[indice];
+    }
+  };
+
+  static desbloquearUsuario = ({ user }) => {
+    if (this.userExist({ user })) {
+      this.restaurarIntentos({ user });
     }
   };
 }

@@ -5,6 +5,7 @@ import midAuthUser from "./middlewares/midAuthUser.js";
 import loginRouter from "./routers/login.js";
 import logoutRouter from "./routers/logout.js";
 import contentRouter from "./routers/content.js";
+import desbloqueoRouter from "./routers/desbloquear.js"
 import iSession from "./sessions/iSession.js";
 const PORT = process.env.PORT ?? 7878;
 
@@ -13,12 +14,16 @@ app.disable("x-powered-by");
 app.use(express.json());
 app.use(midCors);
 
+//Aqui no necesito sesion, para probar solo quiero desbloquearlo
+app.use("/desbloquear", desbloqueoRouter)
+
 app.use(iSession.loadSession);
 app.use("/login", midAuthUser, loginRouter);
 
 app.use(iSession.midSessionExist);
 app.use("/logout", logoutRouter);
 app.use("/content", contentRouter)
+
 //TODO:
 // app.use("/olvidoDatos", olvidoDatosRouter)
 // app.use("/solicitarPreguntas", solicitarPreguntasRouter)
