@@ -31,4 +31,18 @@ app.post("/login", auth, (req, res) => {
 
 });
 
+const auth2 = (req, res, next) => {
+  if (!iSession.sessionExist(req)) {
+    return res.json({ message: "No tiene una sesion iniciada" });
+  }
+
+  next();
+}
+
+app.get("/logout", (req, res) => {
+  console.log(req.session)
+  iSession.destroySession(req);
+  res.json({ message: "Sesion cerrada" });
+})
+
 app.listen(PORT, () => console.log(`Esperando en el puerto ${PORT}...`));

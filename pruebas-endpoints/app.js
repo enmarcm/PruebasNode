@@ -9,8 +9,9 @@ const app = express();
 app.disable("x-powered-by");
 app.use(express.json());
 app.use(midCors);
+
 app.use("/login", iSession.loadSession, loginRouter);
-app.use("/logout", logoutRouter);
+app.use("/logout", iSession.loadSession, logoutRouter);
 // app.use("/olvidoDatos", olvidoDatosRouter)
 // app.use("/solicitarPreguntas", solicitarPreguntasRouter)
 // app.use("/enviarPreguntas", enviarPreguntasRouter)

@@ -6,7 +6,7 @@ class Session {
   }
 
   loadSession = (req, res, next) => this.session(req, res, next);
-
+  
   createSesion = ({ req, infoUser }) => {
     if (this.sessionExist(req)) return false;
 
