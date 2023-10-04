@@ -4,7 +4,7 @@ import midNotFound from "./middlewares/notFound.js";
 import loginRouter from "./routers/login.js";
 import logoutRouter from "./routers/logout.js";
 const PORT = process.env.PORT ?? 7878;
-import iSession from "./iSession.js";
+import iSession from "./sessions/iSession.js";
 const app = express();
 app.disable("x-powered-by");
 app.use(express.json());

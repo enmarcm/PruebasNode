@@ -1,5 +1,5 @@
 import { Router } from "express";
-import iSession from "../iSession.js";
+import iSession from "../sessions/iSession.js";
 const logoutRouter = Router()
 
 logoutRouter.post("/", (req, res) => {

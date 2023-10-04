@@ -1,5 +1,5 @@
 import LoginModel from "../model/loginModel.js";
-import iSession from "../iSession.js";
+import iSession from "../sessions/iSession.js";
 
 class LoginController {
   static loginPost = (req, res) => {

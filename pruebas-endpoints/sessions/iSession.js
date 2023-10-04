@@ -1,9 +1,5 @@
 import Session from "./Session.js";
-const objConfig = {
-  secret: "1234",
-  saveUninitialized: false,
-  resave: false,
-};
+import objConfig from "./objConfig.js";
 
 const iSession = new Session({ config: objConfig });
 
