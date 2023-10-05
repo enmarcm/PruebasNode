@@ -20,7 +20,7 @@ app.disable("x-powered-by");
 app.use(express.json());
 app.use(midCors);
 
-//Aqui no necesito sesion, para probar solo quiero desbloquearlo
+//*Aqui no necesito sesion, para probar solo quiero desbloquearlo (PARA PRUEBAS, PREGUNTAR COMO SE HACE)
 app.use("/desbloquear", desbloqueoRouter)
 
 app.use(iSession.loadSession);
