@@ -38,7 +38,8 @@ class LoginController {
     }
   };
 
-  static desbloquearUsuario = ({user}) =>  LoginModel.desbloquearUsuario({ user });
+  static desbloquearUsuario = ({ user }) =>
+    LoginModel.desbloquearUsuario({ user });
 
   static middlewareAuth = (req, res, next) => {
     if (this.#verifySessionExist(req, res)) return;
@@ -67,11 +68,9 @@ class LoginController {
       email: datos.email,
     };
 
-    if (iSession.createSesion({ req, infoUser })) {
-      return res.status(201).send("Te has logueado correctamente");
-    } else {
-      return res.status(400).send("Ocurrio un error al momento de loguear");
-    }
+    return iSession.createSesion({ req, infoUser })
+      ? res.status(201).send("Te has logueado correctamente")
+      : res.status(400).send("Ocurrio un error al momento de loguear");
   };
 }
 export default LoginController;

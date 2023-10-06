@@ -58,9 +58,7 @@ class LoginModel {
   };
 
   static desbloquearUsuario = ({ user }) => {
-    if (this.userExist({ user })) {
-      this.restaurarIntentos({ user });
-    }
+    if (this.userExist({ user })) return this.restaurarIntentos({ user });
   };
 }
 

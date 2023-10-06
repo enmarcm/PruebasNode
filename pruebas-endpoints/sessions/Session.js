@@ -2,8 +2,8 @@ import session from "express-session";
 class Session {
   /**
    * Constructor de la clase session
-   * @param {Obj} objConfig
-   * @param {Obj} objConfig.config 
+   * @param {Obj} objConfig - Objeto que contiene configuracion
+   * @param {Obj} objConfig.config - Objeto de configuracion de la sesion
    */
   constructor({ config }) {
     this.config = config;
@@ -24,7 +24,7 @@ class Session {
 
   destroySession = (req) => {
     if(!this.sessionExist(req)) return false;
-    req.session.destroy();
+    return req.session.destroy();
   };
 
   sessionExist = (req) => {
@@ -34,7 +34,7 @@ class Session {
 
   midSessionExist = (req, res, next) => {
     if (this.sessionExist(req)) return next();
-    res.status(401).send("No tienes sesion activa");
+    return res.status(401).send("No tienes sesion activa");
   }
 
   updateSession = ({ req, infoUser }) => {
