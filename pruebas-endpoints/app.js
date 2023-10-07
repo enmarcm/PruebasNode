@@ -24,6 +24,7 @@ app.use(midCors);
 app.use("/desbloquear", desbloqueoRouter)
 
 app.use(iSession.loadSession);
+
 app.use("/login", midAuthUser, loginRouter);
 
 app.use(iSession.midSessionExist);

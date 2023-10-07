@@ -52,7 +52,6 @@ class LoginController {
   };
 
   static loginPost = (req, res) => {
-    console.log(req.session);
 
     LoginModel.restaurarIntentos({ user: req.body.user });
 

@@ -11,7 +11,7 @@ class Session {
   }
 
   loadSession = (req, res, next) => this.session(req, res, next);
-  
+
   createSesion = ({ req, infoUser }) => {
     if (this.sessionExist(req)) return false;
 
@@ -23,7 +23,7 @@ class Session {
   };
 
   destroySession = (req) => {
-    if(!this.sessionExist(req)) return false;
+    if (!this.sessionExist(req)) return false;
     return req.session.destroy();
   };
 
@@ -35,7 +35,7 @@ class Session {
   midSessionExist = (req, res, next) => {
     if (this.sessionExist(req)) return next();
     return res.status(401).send("No tienes sesion activa");
-  }
+  };
 
   updateSession = ({ req, infoUser }) => {
     if (this.sessionExist(req)) return false;
