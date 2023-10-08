@@ -1,5 +1,5 @@
-import { Pool } from "pg";
-import bcrypt from "bcryptjs";
+import Pool from "pg-pool";
+import bcrypt from "bcrypt";
 
 /**
  * Clase que maneja la conexión y ejecución de consultas a una base de datos PostgreSQLv usando Pg-Pool.

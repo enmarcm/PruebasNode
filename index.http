@@ -2,7 +2,7 @@ POST http://localhost:7878/login
 Content-Type: application/json
 
 {
-    "user": "enmarcm",
+    "user": "enmarcms",
     "password": "enmanuel"
 }
 

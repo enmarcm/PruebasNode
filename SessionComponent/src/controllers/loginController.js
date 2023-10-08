@@ -1,5 +1,5 @@
-import LoginModel from "../../../pruebas-endpoints/model/loginModel";
-import iSession from "../../../pruebas-endpoints/sessions/iSession";
+import LoginModel from "../models/loginModel.js";
+import iSession from "../data/session-data/iSession.js";
 
 /**
  * Controlador para el inicio de sesión de usuarios.
@@ -24,7 +24,8 @@ class LoginController {
    * @returns {Object} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static verifyUser = (req, res) => {
-    const userExist = LoginModel.userExist({ user: req.body.user });
+    const { user } = req.body;
+    const userExist = LoginModel.verifyUser({ user });
     if (!userExist) return res.status(404).send("El usuario no existe");
   };
 
@@ -76,13 +77,13 @@ class LoginController {
    * @param {Object} res - Objeto de respuesta HTTP.
    * @param {Function} next - Función para pasar al siguiente middleware.
    */
-  static midAut = (req, res, next) => {
+  static midAuth = (req, res, next) => {
     if (iSession.sessionExist(req))
       return res.status(400).send("Ya estás logueado");
     if (this.verifyData(req, res)) return;
     if (this.verifyUser(req, res)) return;
-    if (this.verifyBlock(req, res)) return;
-    if (this.verifyPassword(req, res)) return;
+    // if (this.verifyBlock(req, res)) return;
+    // if (this.verifyPassword(req, res)) return;
 
     return next();
   };
@@ -95,25 +96,25 @@ class LoginController {
    * @returns {Object} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static loginPost = (req, res) => {
-    const { user, password } = req.body;
-    LoginModel.restoreIntentos({ user });
+    // const { user, password } = req.body;
+    // LoginModel.restoreIntentos({ user });
 
-    const datos = LoginModel.retornarDatos({
-      user,
-      password,
-    });
+    // const datos = LoginModel.retornarDatos({
+    //   user,
+    //   password,
+    // });
 
-    const infoUser = {
-      user: datos.user,
-      profile: datos.profile,
-      email: datos.email,
-    };
+    // const infoUser = {
+    //   user: datos.user,
+    //   profile: datos.profile,
+    //   email: datos.email,
+    // };
 
-    return iSession.createSesion({ req, infoUser })
-      ? res.status(201).send(`Te has logueado correctamente ${infoUser.user}`)
-      : res
-          .status(400)
-          .send(`No se pudo crear la sesión para ${infoUser.user}`);
+    // return iSession.createSesion({ req, infoUser })
+    //   ? res.status(201).send(`Te has logueado correctamente ${infoUser.user}`)
+    //   : res
+    //       .status(400)
+    //       .send(`No se pudo crear la sesión para ${infoUser.user}`);
   };
 }
 
