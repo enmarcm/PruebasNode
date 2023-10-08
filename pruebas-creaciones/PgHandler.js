@@ -1,16 +1,18 @@
 import { Pool } from 'pg';
+import bcrypt from 'bcryptjs';
 
 /**
- * Clase que maneja la conexión y ejecución de consultas a una base de datos PostgreSQL usando como base Pg-Pool.
+ * Clase que maneja la conexión y ejecución de consultas a una base de datos PostgreSQL.
  */
 class PgHandler {
   /**
    * Crea una instancia de PgHandler.
    * @param {Object} options - Opciones para la configuración y consultas de la base de datos.
    * @param {Object} options.config - Configuración de la conexión a la base de datos.
-   * @param {Object} options.querys - Consultas predefinidas para la base de datos, objeto o JSON.
+   * @param {Object} options.querys - Consultas predefinidas para la base de datos.
+   * @param {number} [options.saltRounds=10] - Número de rondas para la generación de saltos para la encriptación con bcrypt.
    */
-  constructor({ config, querys }) {
+  constructor({ config, querys, saltRounds = 10 }) {
     /**
      * Configuración de la conexión a la base de datos.
      * @type {Object}
@@ -22,6 +24,11 @@ class PgHandler {
      */
     this.querys = querys;
     /**
+     * Número de rondas para la generación de saltos para la encriptación con bcrypt.
+     * @type {number}
+     */
+    this.saltRounds = saltRounds;
+    /**
      * Pool de conexiones a la base de datos.
      * @type {Pool}
      */
@@ -30,7 +37,7 @@ class PgHandler {
 
   /**
    * Ejecuta una consulta a la base de datos.
-   * @async 
+   * @async
    * @param {Object} options - Opciones para la ejecución de la consulta.
    * @param {string} options.key - Clave de la consulta predefinida a ejecutar.
    * @param {Array} [options.params=[]] - Parámetros para la consulta.
@@ -59,6 +66,31 @@ class PgHandler {
    * @returns {Promise<void>}
    */
   release = async () => await this.pool.release();
+
+  /**
+   * Encripta un dato utilizando bcrypt.
+   * @async
+   * @param {Object} options - Opciones para la encriptación.
+   * @param {string} options.dato - Dato a encriptar.
+   * @returns {Promise<string>} - Dato encriptado.
+   */
+  encriptar = async ({ dato }) => {
+    const datoEncriptado = await bcrypt.hash(dato, this.saltRounds);
+    return datoEncriptado;
+  };
+
+  /**
+   * Compara un dato con un hash encriptado utilizando bcrypt.
+   * @async
+   * @param {Object} options - Opciones para la comparación.
+   * @param {string} options.dato - Dato a comparar.
+   * @param {string} options.hash - Hash encriptado a comparar.
+   * @returns {Promise<boolean>} - Resultado de la comparación (true si son iguales, false si no lo son).
+   */
+  compararEncriptado = async ({ dato, hash }) => {
+    const resultado = await bcrypt.compare(dato, hash);
+    return resultado;
+  };
 }
 
 export default PgHandler;
