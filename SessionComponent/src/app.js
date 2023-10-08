@@ -9,7 +9,7 @@ const app = express();
 app.use(express.json());
 app.use(iSession.loadSession)
 
-app.use('/login', LoginController.midAuth, loginRouter)
+app.use('/login',  loginRouter)
 
 const listenServer = () => console.log(picocolors.bgWhite(picocolors.black(`El servidor esta iniciado en el PUERTO ${PORT}...`)));
 

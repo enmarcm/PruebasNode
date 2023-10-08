@@ -53,7 +53,6 @@ class LoginController {
     const { user, password } = req.body;
     const passwordCorrect = await LoginModel.verifyPassword({ user, password });
 
-    console.log(passwordCorrect)
     if (!passwordCorrect) {
       await LoginModel.disminuirIntentos({ user });
       return res.status(400).send(
@@ -93,7 +92,6 @@ class LoginController {
     if (await this.verifyUser(req, res)) return;
     if (await this.verifyBlock(req, res)) return;
     if (await this.verifyPassword(req, res)) return;
-
     return next();
   };
 
@@ -105,16 +103,18 @@ class LoginController {
    * @param {Object} res - Objeto de respuesta HTTP.
    * @returns {void}
    */
-  static loginPost = (req, res) => {
+  static loginPost = async (req, res) => {
     const { user, password } = req.body;
-    LoginModel.restoreIntentos({ user });
+    // await LoginModel.restoreIntentos({ user });
+    await LoginModel.disminuirIntentos({ user });
 
-    const datos = LoginModel.retornarDatos({
+    const datos = await LoginModel.retornarDatos({
       user,
       password,
     });
 
     const infoUser = {
+      idUser: datos.idUser,
       user: datos.user,
       profile: datos.profile,
       email: datos.email,

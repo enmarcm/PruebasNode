@@ -21,6 +21,7 @@ class LoginModel {
       params: [user],
     });
 
+    //TODO PREGUNTAR COMO PUEDO EVITAR ESTAR HACIENDO ESTO
     const isBlock = resultBlock.bl_user_web;
     const attempts = resultAttemps.at_user_web;
 
@@ -41,9 +42,59 @@ class LoginModel {
     });
 
     return result;
-    };
+  };
+
+  static restoreIntentos = async ({ user }) => {
+    const result = await iPgHandler.executeQuery({
+      key: "restoreIntentos",
+      params: [user],
+    });
+
+    return result;
+  };
+
+  static verifyIntentos = async ({ user }) => {
+    const result = await iPgHandler.executeQuery({
+      key: "verifyIntentos",
+      params: [user],
+    });
+
+    return result;
+  };
+
+  static disminuirIntentos = async ({ user }) => {
+    const [intentos] = await this.verifyIntentos({ user });
+    if (intentos.at_user_web <= 0) return;
+
+    const result = await iPgHandler.executeQuery({
+      key: "disminuirIntentos",
+      params: [user],
+    });
+    return result;
+  };
+
+  static bloquear = async ({ user }) => {
+    const result = await iPgHandler.executeQuery({
+      key: "bloquear",
+      params: [user],
+    });
+    return result;
+
+  }
+
+  static retornarDatos = async ({ user , password}) => {
+    if(!await this.verifyPassword({user,password})) return false
     
-    static restoreIntentos = async ({ user }) => { }
+    const [result] = await iPgHandler.executeQuery({key: 'getDataSession', params: [user]})
+    const data = {
+      idUser: result.id_user_web,
+      user: result.us_user_web,
+      profile: result.na_profile,
+      email: result.em_user_web,
+    }
+
+    return data
+  }
 }
 
 export default LoginModel;
