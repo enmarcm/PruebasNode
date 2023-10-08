@@ -54,7 +54,7 @@ class LoginModel {
   };
 
   static verifyIntentos = async ({ user }) => {
-    const result = await iPgHandler.executeQuery({
+    const [result] = await iPgHandler.executeQuery({
       key: "verifyIntentos",
       params: [user],
     });
@@ -63,7 +63,7 @@ class LoginModel {
   };
 
   static disminuirIntentos = async ({ user }) => {
-    const [intentos] = await this.verifyIntentos({ user });
+    const intentos = await this.verifyIntentos({ user });
     if (intentos.at_user_web <= 0) return;
 
     const result = await iPgHandler.executeQuery({

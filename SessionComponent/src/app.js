@@ -7,10 +7,15 @@ import loginRouter from "./routers/loginRouter.js";
 const PORT = process.env.PORT ?? 7878;
 const app = express();
 app.use(express.json());
-app.use(iSession.loadSession)
+app.use(iSession.loadSession);
 
-app.use('/login',  loginRouter)
+app.use("/login", LoginController.midAuth, loginRouter);
 
-const listenServer = () => console.log(picocolors.bgWhite(picocolors.black(`El servidor esta iniciado en el PUERTO ${PORT}...`)));
+const listenServer = () =>
+  console.log(
+    picocolors.bgWhite(
+      picocolors.black(`El servidor esta iniciado en el PUERTO ${PORT}...`)
+    )
+  );
 
 app.listen(PORT, listenServer);

@@ -56,7 +56,7 @@ class LoginController {
     if (!passwordCorrect) {
       await LoginModel.disminuirIntentos({ user });
       return res.status(400).send(
-        `Contraseña incorrecta, te quedan ${this.obtenerIntentos({
+        `Contraseña incorrecta, te quedan ${await this.obtenerIntentos({
           req,
         })} intentos`
       );
@@ -72,7 +72,7 @@ class LoginController {
   static obtenerIntentos = async ({ req }) => {
     const { user } = req.body;
     const intentos = await LoginModel.verifyIntentos({ user });
-    return intentos;
+    return intentos.at_user_web;
   };
 
   //* Desde aqui se manejan los middlewares.
@@ -105,8 +105,7 @@ class LoginController {
    */
   static loginPost = async (req, res) => {
     const { user, password } = req.body;
-    // await LoginModel.restoreIntentos({ user });
-    await LoginModel.disminuirIntentos({ user });
+    await LoginModel.restoreIntentos({ user });
 
     const datos = await LoginModel.retornarDatos({
       user,
