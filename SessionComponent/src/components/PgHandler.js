@@ -2,7 +2,7 @@ import { Pool } from "pg";
 import bcrypt from "bcryptjs";
 
 /**
- * Clase que maneja la conexión y ejecución de consultas a una base de datos PostgreSQL.
+ * Clase que maneja la conexión y ejecución de consultas a una base de datos PostgreSQLv usando Pg-Pool.
  */
 class PgHandler {
   /**
@@ -10,7 +10,6 @@ class PgHandler {
    * @param {Object} options - Opciones para la configuración y consultas de la base de datos.
    * @param {Object} options.config - Configuración de la conexión a la base de datos.
    * @param {Object} options.querys - Consultas predefinidas para la base de datos.
-   * @param {number} [options.saltRounds=10] - Número de rondas para la generación de saltos para la encriptación con bcrypt.
    */
   constructor({ config, querys }) {
     /**
@@ -27,7 +26,7 @@ class PgHandler {
      * Número de rondas para la generación de saltos para la encriptación con bcrypt.
      * @type {number}
      */
-    this.saltRounds = saltRounds;
+    this.saltRounds = 10;
     /**
      * Pool de conexiones a la base de datos.
      * @type {Pool}
