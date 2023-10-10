@@ -21,7 +21,7 @@ class LoginModel {
       params: [user],
     });
 
-    //TODO PREGUNTAR COMO PUEDO EVITAR ESTAR HACIENDO ESTO
+    //TODO: PREGUNTAR COMO PUEDO EVITAR ESTAR HACIENDO ESTO
     const isBlock = resultBlock.bl_user_web;
     const attempts = resultAttemps.at_user_web;
 
