@@ -10,6 +10,15 @@ class Security {
     this.loadPermissions();
   }
 
+  loadPermissions = async () => {
+    //Esto es por si intentan llamarlo
+    if (this.permissions.size > 0) return;
+
+    const permisos = await this.controller.obtenerPermisos();
+    this.#putPermissionsMap({ permisos });
+    return;
+  };
+
   #verifyLoadPermissions = async () => {
     if (this.permissions.size === 0) {
       console.log("Esperando cargar servicios");
@@ -17,6 +26,30 @@ class Security {
       return true;
     }
     return;
+  };
+
+  #putPermissionsMap = ({ permisos }) => {
+    //Aqui ya tengo clara mi estructura, por eso, voy verificando si cada una de las partes existe, si no la creo, para al final pushear los emtodos que es el unico array
+    const result = permisos.reduce((acc, permiso) => {
+      const { profile, object, method, area } = permiso;
+      acc[profile] = acc[profile] || {};
+      acc[profile][area] = acc[profile][area] || {};
+      acc[profile][area][object] = acc[profile][area][object] || [];
+      acc[profile][area][object].push(method);
+      return acc;
+    }, {});
+
+    for (const profile in result) {
+      const porArea = result[profile];
+      this.permissions.set(profile, porArea);
+    }
+    return;
+  };
+
+  #reloadPermission = async () => {
+    this.permissions.clear();
+    await this.loadPermissions();
+    return true;
   };
 
   hasPermission = async ({ profile, area, object, method }) => {
@@ -49,42 +82,6 @@ class Security {
     // return result;
   };
 
-  // TODO: Ver que hace esto
-  sendToClient = () => {};
-
-  #putPermissionsMap = ({ permisos }) => {
-    //Aqui ya tengo clara mi estructura, por eso, voy verificando si cada una de las partes existe, si no la creo, para al final pushear los emtodos que es el unico array
-    const result = permisos.reduce((acc, permiso) => {
-      const { profile, object, method, area } = permiso;
-      acc[profile] = acc[profile] || {};
-      acc[profile][area] = acc[profile][area] || {};
-      acc[profile][area][object] = acc[profile][area][object] || [];
-      acc[profile][area][object].push(method);
-      return acc;
-    }, {});
-
-    for (const profile in result) {
-      const porArea = result[profile];
-      this.permissions.set(profile, porArea);
-    }
-    return;
-  };
-
-  loadPermissions = async () => {
-    //Esto es por si intentan llamarlo
-    if (this.permissions.size > 0) return;
-
-    const permisos = await this.controller.obtenerPermisos();
-    this.#putPermissionsMap({ permisos });
-    return;
-  };
-
-  reloadPermission = async () => {
-    this.permissions.clear();
-    await this.loadPermissions();
-    return true;
-  };
-
   setPermission = async ({ area, object, method, profile, status }) => {
     //Establecer un update a la BDD y en el mapa para cambiar esto
   };
@@ -96,6 +93,10 @@ class Security {
   blockMethod = async ({ area, object, method }) => {
     //Establecemos que un metodo no pueda ser ejecutado
   };
+
+  // TODO: Ver que hace esto
+  sendToClient = () => {};
+
 }
 
 export default Security;

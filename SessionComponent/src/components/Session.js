@@ -16,7 +16,7 @@ class Session {
      */
     this.config = config;
     /**
-     * Objeto de sesion de express.
+     * Objeto de sesion de express-session.
      * @type {Object}
      */
     this.session = session(config);

@@ -1,20 +1,42 @@
+/**
+ * @file Archivo principal de la aplicación.
+ * @description Este archivo inicia el servidor y configura los middlewares y routers.
+ * @author Enmanuel Colina <theenmanuel123@gmail.com>
+ */
+
 import express from "express";
 import picocolors from "picocolors";
 import iSession from "./data/session-data/iSession.js";
 import LoginController from "./controllers/loginController.js";
-import loginRouter from "./routers/loginRouter.js";
-import toProcessRouter from "./routers/toProcessRouter.js";
+import { loginRouter, toProcessRouter } from "./routers/dispatcher.js";
+import { midCors, midNotFound } from "./middlewares/middlewares.js";
 
+/**
+ * Puerto en el que se iniciará el servidor.
+ * @type {number}
+ */
 const PORT = process.env.PORT ?? 7878;
+
+/**
+ * Instancia de la aplicación Express.
+ * @type {express.Application}
+ */
 const app = express();
+
+// Configuración de middlewares y routers.
 app.use(express.json());
 app.use(iSession.loadSession);
-
+app.use(midCors);
 app.use("/login", LoginController.midAuth, loginRouter);
+app.use(iSession.midSessionExist);
+app.use("/toProcess", toProcessRouter);
+app.use(midNotFound);
 
-app.use(iSession.midSessionExist)
-app.use("/toProcess", toProcessRouter)
-
+/**
+ * Función que se ejecuta cuando el servidor está escuchando en el puerto especificado.
+ * @function
+ * @returns {void}
+ */
 const listenServer = () =>
   console.log(
     picocolors.bgWhite(
@@ -22,4 +44,5 @@ const listenServer = () =>
     )
   );
 
+// Inicio del servidor
 app.listen(PORT, listenServer);
