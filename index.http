@@ -1,3 +1,4 @@
+### INICIO SESION ADMIN
 POST http://localhost:7878/login
 Content-Type: application/json
 
@@ -6,16 +7,37 @@ Content-Type: application/json
     "password": "1234567"
 }
 
-
-### PROCESS
+### PROCESS ADMIN
 POST http://localhost:7878/toProcess
 Content-Type: application/json
 
 {
     "area": "access",
     "object": "users",
-    "method": "addUser"
+    "method": "seeUser"
 }
+
+###INNICIO SESION USER
+POST http://localhost:7878/login
+Content-Type: application/json
+
+{
+    "user": "rafafpf",
+    "password": "pass"
+
+}  
+### PROCESS USER
+POST http://localhost:7878/toProcess
+Content-Type: application/json
+
+{
+    "area": "access",
+    "object": "users",
+    "method": "seeUser",
+    "params" : ["enmarcm"]
+    # Preguntar de cuando pueda usar los parametroscon objeto
+}
+
 
 
 ###SIGUIENTE

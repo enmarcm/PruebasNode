@@ -1,5 +1,5 @@
-import _ from "lodash-es";
 class Security {
+  //Preguntar acerca de la RUTA de Objetos de Negocio
   constructor({ controller, pathBO }) {
     this.controller = controller;
     this.pathBO = pathBO;
@@ -30,10 +30,16 @@ class Security {
 
   executeMethod = async ({ area, object, method, params = [] }) => {
     const path = `${this.pathBO}/${area}/${object}.js`;
-    // const module = await import(path);
-    // const obj = new (module.default ?? module[object])();
-    // const methodResult = await obj[method](...params);
-    // return methodResult;
+    const module = await import(path);
+    const moduleReady = module.default ?? module[object]
+    //Revisar que si tiene constructor va a dar error
+    const obj = new moduleReady();
+
+    //Permite saber si el metodo sera o no static
+    const metodoAEjecutar = obj[method] ?? moduleReady[method]
+
+    const methodResult = await metodoAEjecutar(...params) ;
+    return methodResult;
 
     //* Otra manera es directamente usando la clase Reflect
     // const obj = Reflect.construct(await import(path)[object], []);
