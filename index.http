@@ -17,7 +17,7 @@ Content-Type: application/json
     "method": "seeUser"
 }
 
-###INNICIO SESION USER
+###INICIO SESION USER
 POST http://localhost:7878/login
 Content-Type: application/json
 

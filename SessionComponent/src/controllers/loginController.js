@@ -126,7 +126,11 @@ class LoginController {
           .send(`No se pudo crear la sesión para ${infoUser.user}`);
   };
 
-  static loginGet = (req, res) => res.json({message: "Esta es el endpoint para loguear, pero estas usando GET, usa POST para enviar los datos"})
+  static loginGet = (req, res) =>
+    res.json({
+      message:
+        "Esta es el endpoint para loguear, pero estas usando GET, usa POST para enviar los datos",
+    });
 }
 
 export default LoginController;
