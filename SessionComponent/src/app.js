@@ -3,6 +3,7 @@ import picocolors from "picocolors";
 import iSession from "./data/session-data/iSession.js";
 import LoginController from "./controllers/loginController.js";
 import loginRouter from "./routers/loginRouter.js";
+import toProcessRouter from "./routers/toProcessRouter.js";
 
 const PORT = process.env.PORT ?? 7878;
 const app = express();
@@ -10,6 +11,9 @@ app.use(express.json());
 app.use(iSession.loadSession);
 
 app.use("/login", LoginController.midAuth, loginRouter);
+
+app.use(iSession.midSessionExist)
+app.use("/toProcess", toProcessRouter)
 
 const listenServer = () =>
   console.log(

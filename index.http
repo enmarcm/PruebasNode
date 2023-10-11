@@ -6,6 +6,18 @@ Content-Type: application/json
     "password": "1234567"
 }
 
+
+### PROCESS
+POST http://localhost:7878/toProcess
+Content-Type: application/json
+
+{
+    "area": "access",
+    "object": "users",
+    "method": "addUser"
+}
+
+
 ###SIGUIENTE
 
 POST http://localhost:7878/logout
