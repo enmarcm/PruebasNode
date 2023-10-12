@@ -1,3 +1,4 @@
+
 ### INICIO SESION ADMIN
 POST http://localhost:7878/login
 Content-Type: application/json
@@ -14,8 +15,10 @@ Content-Type: application/json
 {
     "area": "access",
     "object": "users",
-    "method": "seeUser"
+    "method": "seeUser",
+    "params": [{"user": "rafafpf"}]
 }
+
 
 ###INICIO SESION USER
 POST http://localhost:7878/login
@@ -33,12 +36,9 @@ Content-Type: application/json
 {
     "area": "access",
     "object": "users",
-    "method": "seeUser",
-    "params" : ["enmarcm"]
-    # Preguntar de cuando pueda usar los parametroscon objeto
+    "method": "addUser",
+    "params" : [{"user": "gabyale", "password": "$2a$10$C0zUwkRwyZbrI/nuCMppyuS0XKpsdUHt6ypLLhulRR7Jfe/inElC.", "email": "gabyalemolero123@gmail.com"}]
 }
-
-
 
 ###SIGUIENTE
 

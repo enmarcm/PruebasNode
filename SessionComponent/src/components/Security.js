@@ -16,6 +16,7 @@ class Security {
 
     const permisos = await this.controller.obtenerPermisos();
     this.#putPermissionsMap({ permisos });
+
     return;
   };
 
@@ -56,34 +57,69 @@ class Security {
     await this.#verifyLoadPermissions();
     // Aqui hay que revisar el mapa y luego encontrar si tiene coincidencia, para devolver true o false
 
-    const permiso = this.permissions.get(profile)[area][object].includes(method);
+    const permiso = this.permissions
+      .get(profile)
+      [area][object].includes(method);
 
     return permiso ? true : false;
   };
 
   executeMethod = async ({ area, object, method, params = [] }) => {
-    const path = `${this.pathBO}/${area}/${object}.js`;
-    const module = await import(path);
-    const moduleReady = module.default ?? module[object]
-    //Revisar que si tiene constructor va a dar error
-    const obj = new moduleReady();
+    try {
+      const path = `${this.pathBO}/${area}/${object}.js`;
+      const module = await import(path);
+      const moduleReady = module.default ?? module[object];
+      //Revisar que si tiene constructor con parametros va a dar error
+      const obj = new moduleReady();
 
-    //Permite saber si el metodo sera o no static
-    const metodoAEjecutar = obj[method] ?? moduleReady[method]
+      //Permite saber si el metodo sera o no static
+      const metodoAEjecutar = obj[method] ?? moduleReady[method];
 
-    const methodResult = await metodoAEjecutar(...params) ;
-    return methodResult;
-
-    //* Otra manera es directamente usando la clase Reflect
-    // const obj = Reflect.construct(await import(path)[object], []);
-    // const result = await obj[method](...params);
-    // * O tambien puedo usar Reflect.apply
-    // const result = Reflect.apply(obj[method], obj, params)
-    // return result;
+      //Revisar que si son parametros con objeto dara error
+      const methodResult = await metodoAEjecutar(...params);
+      return methodResult;
+    } catch (error) {
+      console.error(`Existio un error ${error}`);
+    }
   };
+
+  #verifyMethod = async ({ area, object, method }) =>
+    await this.controller.verifyMethod({ area, object, method });
+
+  #verifyProfile = async ({ profile }) =>
+    await this.controller.verifyProfile({ profile });
 
   setPermission = async ({ area, object, method, profile, status }) => {
     //Establecer un update a la BDD y en el mapa para cambiar esto
+    const [methodExist] = await this.#verifyMethod({ area, object, method });
+    if (!methodExist) return false;
+    const idMethod = methodExist.id_method;
+
+    const [profileExist] = await this.#verifyProfile({ profile });
+    if (!profileExist) return false;
+    const idProfile = profileExist.id_profile;
+
+    if (status) {
+      const execute = await this.controller.addPermission({
+        idProfile,
+        idMethod,
+      });
+      this.permissions.get(profile)[area][object].push(method);
+      return execute;
+    } else {
+      const execute = await this.controller.removePermission({
+        idProfile,
+        idMethod,
+      });
+
+      const indiceBorrar = this.permissions
+        .get(profile)
+        [area][object].indexOf(method);
+
+      if (indiceBorrar === -1) return false;
+      this.permissions.get(profile)[area][object].splice(indiceBorrar, 1);
+      return execute;
+    }
   };
 
   blockProfile = async ({ profile }) => {
@@ -93,10 +129,6 @@ class Security {
   blockMethod = async ({ area, object, method }) => {
     //Establecemos que un metodo no pueda ser ejecutado
   };
-
-  // TODO: Ver que hace esto
-  sendToClient = () => {};
-
 }
 
 export default Security;

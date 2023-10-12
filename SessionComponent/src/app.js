@@ -1,6 +1,6 @@
 /**
  * @file Archivo principal de la aplicación.
- * @description Este archivo inicia el servidor y configura los middlewares y routers.
+ * @description Este archivo inicia el servidor y configura los middlewares y routers, ejecutando el SessionComponent y el Security Component.
  * @author Enmanuel Colina <theenmanuel123@gmail.com>
  */
 
@@ -25,8 +25,8 @@ const app = express();
 
 // Configuración de middlewares y routers.
 app.use(express.json());
-app.use(iSession.loadSession);
 app.use(midCors);
+app.use(iSession.loadSession);
 app.use("/login", LoginController.midAuth, loginRouter);
 app.use(iSession.midSessionExist);
 app.use("/toProcess", toProcessRouter);

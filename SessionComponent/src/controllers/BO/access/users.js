@@ -8,7 +8,7 @@ class users{
         return result
     }
 
-    static seeUser = async( user ) => {
+    static seeUser = async( {user }) => {
         const result = await usersModel.seeUser({ user })
 
         if(!result) return { error: 'No existe el usuario'}
