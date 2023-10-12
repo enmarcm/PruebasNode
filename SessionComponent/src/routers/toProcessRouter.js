@@ -1,7 +1,6 @@
 import { Router } from "express";
 import Security from "../components/Security.js";
 import permissionController from "../controllers/permissionController.js"
-import usersModel from "../models/BO/usersModel.js";
 
 const iSecurity = new Security({ controller: permissionController, pathBO: '../controllers/BO' })
 
