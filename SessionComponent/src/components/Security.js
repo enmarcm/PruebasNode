@@ -5,7 +5,6 @@ class Security {
     this.pathBO = pathBO;
     this.permissions = new Map();
 
-    //TODO: Preguntar sobre esto, ya que no estoy esperando que cree nada
     //Mejor que al instanciar usemos este metodo, asi nos aseguramos que tengamos el await
     this.loadPermissions();
   }
@@ -130,10 +129,42 @@ class Security {
 
   blockProfile = async ({ profile }) => {
     //Establecemos que un perfil no pueda hacer nada
+    const [profileExist] = await this.#verifyProfile({ profile });
+    if (!profileExist) return false;
+    const idProfile = profileExist.id_profile;
+
+    const execute = await this.controller.blockProfile({ idProfile });
+
+    //Aqui hay que borrar del mapa
+    this.permissions.set(profile, {});
+    return execute;
+  };
+
+  #blockMethodMap = ({ method }) => {
+    this.permissions.forEach((profile) => {
+      for (const key in profile) {
+        for (const key2 in profile[key]) {
+          const indexBorrar = profile[key][key2].indexOf(method);
+          if (indexBorrar !== -1) {
+            profile[key][key2].splice(indexBorrar, 1);
+          }
+        }
+      }
+    });
   };
 
   blockMethod = async ({ area, object, method }) => {
     //Establecemos que un metodo no pueda ser ejecutado
+    const [methodExist] = await this.#verifyMethod({ area, object, method });
+    if (!methodExist) return false;
+    const idMethod = methodExist.id_method;
+
+    const execute = await this.controller.blockMethod({ idMethod });
+
+    //Aqui hay que borrar del mapa
+    this.#blockMethodMap({ method });
+
+    return execute;
   };
 }
 
