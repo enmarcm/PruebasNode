@@ -24,6 +24,16 @@ class PermissionModel{
         const result = await iPgHandler.executeQuery({key: 'addPermission', params: [idProfile, idMethod]})
         return result
     }
+
+    static blockMethod = async ({ idMethod }) => { 
+        const result = await iPgHandler.executeQuery({key: 'blockMethod', params: [idMethod]})
+        return result
+    }
+
+    static blockProfile = async ({ idProfile }) => { 
+        const result = await iPgHandler.executeQuery({key: 'blockProfile', params: [idProfile]})
+        return result
+    }
 }
 
 export default PermissionModel
