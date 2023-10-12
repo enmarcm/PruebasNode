@@ -17,7 +17,11 @@ class PermissionControler {
 
   static removePermission = async ({ idProfile, idMethod }) => await PermissionModel.removePermission({ idProfile, idMethod })
   
-  static addPermission = async ({idProfile, idMethod}) => await PermissionModel.addPermission({idProfile, idMethod})
+  static addPermission = async ({ idProfile, idMethod }) => await PermissionModel.addPermission({ idProfile, idMethod })
+  
+  static blockMethod = async ({ idMethod }) => await PermissionModel.blockMethod({ idMethod })
+  
+  static blockProfile = async ({ idProfile }) => await PermissionModel.blockProfile({ idProfile })
 }
 
 export default PermissionControler;
