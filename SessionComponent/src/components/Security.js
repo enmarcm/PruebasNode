@@ -89,6 +89,30 @@ class Security {
   #verifyProfile = async ({ profile }) =>
     await this.controller.verifyProfile({ profile });
 
+  #addPermission = async ({ idProfile, idMethod, profile, method }) => {
+    const execute = await this.controller.addPermission({
+      idProfile,
+      idMethod,
+    });
+    this.permissions.get(profile)[area][object].push(method);
+    return execute;
+  };
+
+  #removePermission = async ({ idProfile, idMethod, profile, method }) => {
+    const execute = await this.controller.removePermission({
+      idProfile,
+      idMethod,
+    });
+
+    const indiceBorrar = this.permissions
+      .get(profile)
+      [area][object].indexOf(method);
+
+    if (indiceBorrar === -1) return false;
+    this.permissions.get(profile)[area][object].splice(indiceBorrar, 1);
+    return execute;
+  };
+
   setPermission = async ({ area, object, method, profile, status }) => {
     //Establecer un update a la BDD y en el mapa para cambiar esto
     const [methodExist] = await this.#verifyMethod({ area, object, method });
@@ -99,27 +123,9 @@ class Security {
     if (!profileExist) return false;
     const idProfile = profileExist.id_profile;
 
-    if (status) {
-      const execute = await this.controller.addPermission({
-        idProfile,
-        idMethod,
-      });
-      this.permissions.get(profile)[area][object].push(method);
-      return execute;
-    } else {
-      const execute = await this.controller.removePermission({
-        idProfile,
-        idMethod,
-      });
-
-      const indiceBorrar = this.permissions
-        .get(profile)
-        [area][object].indexOf(method);
-
-      if (indiceBorrar === -1) return false;
-      this.permissions.get(profile)[area][object].splice(indiceBorrar, 1);
-      return execute;
-    }
+    return status
+      ? await this.#addPermission({ idProfile, idMethod, profile, method })
+      : await this.#removePermission({ idProfile, idMethod, profile, method });
   };
 
   blockProfile = async ({ profile }) => {
