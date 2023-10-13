@@ -1,5 +1,4 @@
 class Security {
-  //Preguntar acerca de la RUTA de Objetos de Negocio
   constructor({ controller, pathBO }) {
     this.controller = controller;
     this.pathBO = pathBO;
@@ -82,6 +81,21 @@ class Security {
     }
   };
 
+  setPermission = async ({ area, object, method, profile, status }) => {
+    //Establecer un update a la BDD y en el mapa para cambiar esto
+    const [methodExist] = await this.#verifyMethod({ area, object, method });
+    if (!methodExist) return false;
+    const idMethod = methodExist.id_method;
+
+    const [profileExist] = await this.#verifyProfile({ profile });
+    if (!profileExist) return false;
+    const idProfile = profileExist.id_profile;
+
+    return status
+      ? await this.#addPermission({ idProfile, idMethod, profile, method })
+      : await this.#removePermission({ idProfile, idMethod, profile, method });
+  };
+
   #verifyMethod = async ({ area, object, method }) =>
     await this.controller.verifyMethod({ area, object, method });
 
@@ -112,21 +126,6 @@ class Security {
     return execute;
   };
 
-  setPermission = async ({ area, object, method, profile, status }) => {
-    //Establecer un update a la BDD y en el mapa para cambiar esto
-    const [methodExist] = await this.#verifyMethod({ area, object, method });
-    if (!methodExist) return false;
-    const idMethod = methodExist.id_method;
-
-    const [profileExist] = await this.#verifyProfile({ profile });
-    if (!profileExist) return false;
-    const idProfile = profileExist.id_profile;
-
-    return status
-      ? await this.#addPermission({ idProfile, idMethod, profile, method })
-      : await this.#removePermission({ idProfile, idMethod, profile, method });
-  };
-
   blockProfile = async ({ profile }) => {
     //Establecemos que un perfil no pueda hacer nada
     const [profileExist] = await this.#verifyProfile({ profile });
@@ -138,19 +137,6 @@ class Security {
     //Aqui hay que borrar del mapa
     this.permissions.set(profile, {});
     return execute;
-  };
-
-  #blockMethodMap = ({ method }) => {
-    this.permissions.forEach((profile) => {
-      for (const key in profile) {
-        for (const key2 in profile[key]) {
-          const indexBorrar = profile[key][key2].indexOf(method);
-          if (indexBorrar !== -1) {
-            profile[key][key2].splice(indexBorrar, 1);
-          }
-        }
-      }
-    });
   };
 
   blockMethod = async ({ area, object, method }) => {
@@ -165,6 +151,19 @@ class Security {
     this.#blockMethodMap({ method });
 
     return execute;
+  };
+
+  #blockMethodMap = ({ method }) => {
+    this.permissions.forEach((profile) => {
+      for (const key in profile) {
+        for (const key2 in profile[key]) {
+          const indexBorrar = profile[key][key2].indexOf(method);
+          if (indexBorrar !== -1) {
+            profile[key][key2].splice(indexBorrar, 1);
+          }
+        }
+      }
+    });
   };
 }
 
