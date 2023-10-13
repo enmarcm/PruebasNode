@@ -7,9 +7,8 @@
 import express from "express";
 import picocolors from "picocolors";
 import iSession from "./data/session-data/iSession.js";
-import LoginController from "./controllers/loginController.js";
 import { loginRouter, toProcessRouter } from "./routers/dispatcher.js";
-import { midCors, midNotFound } from "./middlewares/middlewares.js";
+import { midCors, midNotFound , midAuthLogin} from "./middlewares/middlewares.js";
 
 /**
  * Puerto en el que se iniciará el servidor.
@@ -27,7 +26,7 @@ const app = express();
 app.use(express.json());
 app.use(midCors);
 app.use(iSession.loadSession);
-app.use("/login", LoginController.midAuth, loginRouter);
+app.use("/login", midAuthLogin, loginRouter);
 app.use(iSession.midSessionExist);
 app.use("/toProcess", toProcessRouter);
 app.use(midNotFound);
