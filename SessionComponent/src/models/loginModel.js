@@ -17,12 +17,12 @@ class LoginModel {
    * @function
    * @param {Object} params - Los parámetros de entrada del método.
    * @param {string} params.user - El nombre de usuario del usuario.
-   * @returns {Promise} Una promesa que resuelve con el resultado de la consulta a la base de datos.
+   * @returns {Promise<Object|boolean>} Una promesa que resuelve con el resultado de la consulta a la base de datos.
    */
   static verifyUser = async ({ user }) => {
     const resultado = await iPgHandler.executeQuery({
       key: "verifyUser",
-      params: [user],
+      params: [user]
     });
 
     return resultado.length > 0 ? resultado[0] : false;
@@ -35,7 +35,7 @@ class LoginModel {
    * @function
    * @param {Object} params - Los parámetros de entrada del método.
    * @param {string} params.user - El nombre de usuario del usuario.
-   * @returns {Promise} Una promesa que resuelve con un valor booleano que indica si el usuario está desbloqueado o no.
+   * @returns {Promise<boolean>} Una promesa que resuelve con un valor booleano que indica si el usuario está desbloqueado o no.
    */
   static verifyBlock = async ({ user }) => {
     const [resultBlock] = await iPgHandler.executeQuery({
@@ -51,7 +51,7 @@ class LoginModel {
     const isBlock = resultBlock.bl_user_web;
     const attempts = resultAttemps.at_user_web;
 
-    return (isBlock || attempts) <= 0 ? true : false;
+    return (isBlock || attempts <= 0) ? true : false;
   };
 
   /**
@@ -62,7 +62,7 @@ class LoginModel {
    * @param {Object} params - Los parámetros de entrada del método.
    * @param {string} params.user - El nombre de usuario del usuario.
    * @param {string} params.password - La contraseña del usuario.
-   * @returns {Promise} Una promesa que resuelve con un valor booleano que indica si la contraseña es correcta o no.
+   * @returns {Promise<boolean>} Una promesa que resuelve con un valor booleano que indica si la contraseña es correcta o no.
    */
   static verifyPassword = async ({ user, password }) => {
     const [resultPass] = await iPgHandler.executeQuery({
@@ -87,7 +87,7 @@ class LoginModel {
    * @function
    * @param {Object} params - Los parámetros de entrada del método.
    * @param {string} params.user - El nombre de usuario del usuario.
-   * @returns {Promise} Una promesa que resuelve con el resultado de la consulta a la base de datos.
+   * @returns {Promise<Object[]>} Una promesa que resuelve con el resultado de la consulta a la base de datos.
    */
   static restoreIntentos = async ({ user }) => {
     const result = await iPgHandler.executeQuery({
@@ -105,7 +105,7 @@ class LoginModel {
    * @function
    * @param {Object} params - Los parámetros de entrada del método.
    * @param {string} params.user - El nombre de usuario del usuario.
-   * @returns {Promise} Una promesa que resuelve con el número de intentos de inicio de sesión fallidos de un usuario.
+   * @returns {Promise<Object>} Una promesa que resuelve con el número de intentos de inicio de sesión fallidos de un usuario.
    */
   static verifyIntentos = async ({ user }) => {
     const [result] = await iPgHandler.executeQuery({
