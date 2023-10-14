@@ -37,6 +37,7 @@ class PermissionModel{
 
     static executeMethod = async ({ method, params }) => { 
         //Importante, los params deben estar ordenados, tal cual como estan en el archivo de querys para que funcione
+        //El query debe llamarse igual al metodo para que funcione
         const parametros = []
         for (const key in params) {
             parametros.push(params[key])
