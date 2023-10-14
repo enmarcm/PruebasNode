@@ -1,4 +1,3 @@
-
 ### INICIO SESION ADMIN
 POST http://localhost:7878/login
 Content-Type: application/json
@@ -37,7 +36,7 @@ Content-Type: application/json
     "area": "access",
     "object": "users",
     "method": "addUser",
-    "params" : [{"user": "gabyale", "password": "$2a$10$C0zUwkRwyZbrI/nuCMppyuS0XKpsdUHt6ypLLhulRR7Jfe/inElC.", "email": "gabyalemolero123@gmail.com"}]
+    "params" : [{"user": "migueALEA", "password": "$2a$10$XneOZCWFEY44Jo58fr4LRua5Vyy3sXHBexFaYH.5eMPZtgnMK6kbm", "email": "miguel123@gmail.com"}]
 }
 
 ###SIGUIENTE
