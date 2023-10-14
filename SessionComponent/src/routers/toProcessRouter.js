@@ -1,8 +1,10 @@
 import { Router } from "express";
 import Security from "../components/Security.js";
 import permissionController from "../controllers/permissionController.js"
+import importJSON from "../utils/importJson.js"
 
-const iSecurity = new Security({ controller: permissionController, pathBO: '../controllers/BO' })
+const configSecurity = importJSON({path: '../data/security-data/config-security.json'})
+const iSecurity = new Security({ controller: permissionController, config: configSecurity})
 
 const toProcessRouter = Router()
 
@@ -10,7 +12,7 @@ toProcessRouter.post('/', async (req, res) => {
     const { user, profile } = req.session;
 
     const { area, method, object, params } = req.body;
-    
+
     const permiso = await iSecurity.hasPermission({profile, area, object, method})
 
     if (permiso) {
