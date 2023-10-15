@@ -1,6 +1,6 @@
 import PermissionModel from "../models/permissionModel.js";
 
-class PermissionControler {
+class PermissionController {
   // static obtenerPermisos = async () => {
   //   const result = await PermissionModel.obtenerPermisos();
   //   return result;
@@ -31,4 +31,4 @@ class PermissionControler {
   };
 }
 
-export default PermissionControler;
+export default PermissionController;
