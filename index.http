@@ -7,6 +7,9 @@ Content-Type: application/json
     "password": "1234567"
 }
 
+###LOGOUT ADMIN
+GET http://localhost:7878/logout
+
 ### PROCESS ADMIN
 POST http://localhost:7878/toProcess
 Content-Type: application/json
