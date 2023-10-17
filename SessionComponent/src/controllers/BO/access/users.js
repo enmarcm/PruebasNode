@@ -2,6 +2,7 @@ import { verifyAddUser } from "../../../schemas/userSchema.js";
 import usersModel from "../../../models/BO/usersModel.js";
 class users {
   addUser = async ({ user, password, email, questions }) => {
+    
     const result = await verifyAddUser({
       data: { user, password, email, questions },
     });
