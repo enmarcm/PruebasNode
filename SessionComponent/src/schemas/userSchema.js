@@ -21,6 +21,7 @@ const addUserSchema = z.object({
     )
     .min(2)
     .max(6),
+  profile: z.array(z.string().min(3).max(10)).min(1)
 });
 
 export const verifyAddUser = async ({ data }) =>

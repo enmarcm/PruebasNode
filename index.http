@@ -1,4 +1,7 @@
 ### INICIO SESION ADMIN
+GET http://localhost:7878/login
+
+###
 POST http://localhost:7878/login
 Content-Type: application/json
 

@@ -64,7 +64,7 @@ class Session {
    * @param {Object} req - Objeto de petición HTTP.
    * @returns {boolean} - true si la sesión existe, false si no existe.
    */
-  sessionExist = (req) => (req.session) ? true : false;
+  sessionExist = (req) => (req.session && req.session.user) ? true : false;
 
   /**
    * Middleware para verificar si existe una sesión en la petición.

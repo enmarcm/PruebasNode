@@ -173,8 +173,7 @@ class LoginModel {
     const data = {
       idUser: result.id_user_web,
       user: result.us_user_web,
-      profile: result.na_profile,
-      email: result.em_user_web,
+      email: result.em_user_web
     };
 
     return data;

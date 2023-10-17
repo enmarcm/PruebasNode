@@ -86,6 +86,7 @@ class LoginController {
    * @returns {Promise<Object>} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static midAuth = async (req, res, next) => {
+    // if(req.method === 'GET') return next()
     if (iSession.sessionExist(req))
       return res.status(400).send("Ya estás logueado");
     if (this.verifyData(req, res)) return;
@@ -115,12 +116,11 @@ class LoginController {
     const infoUser = {
       idUser: datos.idUser,
       user: datos.user,
-      profile: datos.profile,
       email: datos.email,
     };
 
     return iSession.createSesion({ req, infoUser })
-      ? res.status(201).send(`Te has logueado correctamente ${infoUser.user}`)
+      ? res.redirect(303, "/setProfile")
       : res
           .status(400)
           .send(`No se pudo crear la sesión para ${infoUser.user}`);
