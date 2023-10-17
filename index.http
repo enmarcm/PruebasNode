@@ -18,7 +18,7 @@ Content-Type: application/json
     "area": "access",
     "object": "users",
     "method": "seeUser",
-    "params": [{"user": "rafafpf"}]
+    "params": [{"user": "enmarcm"}]
 }
 
 
@@ -39,7 +39,19 @@ Content-Type: application/json
     "area": "access",
     "object": "users",
     "method": "addUser",
-    "params" : [{"user": "migueALEA", "password": "$2a$10$XneOZCWFEY44Jo58fr4LRua5Vyy3sXHBexFaYH.5eMPZtgnMK6kbm", "email": "miguel123@gmail.com"}]
+    "params" : [{"user": "migue", "password": "parafraseo", "email": "miguel123@gmail.com",
+    "questions" : [{
+        "question": "NOMBRE DE TU MAMA",
+        "answer": "MARIA"
+    }, {
+        "question": "NOMBRE DE TU PAPA",
+        "answer": "JOSE"
+    }, {
+        "question": "NOMBRE DE TU ABUELO",
+        "answer": "ESTEBAN"
+    }
+    ]
+    }]
 }
 
 ###SIGUIENTE

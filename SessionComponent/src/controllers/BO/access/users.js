@@ -1,19 +1,24 @@
-import usersModel from "../../../models/BO/usersModel.js"
-class users{
-    addUser = async({ user, password, email }) => {
-        //TODO: Hay que hacer codigo que valide si las cadenas ingresadas son validas, usar ZOD
+import { verifyAddUser } from "../../../schemas/userSchema.js";
+import usersModel from "../../../models/BO/usersModel.js";
+class users {
+  addUser = async ({ user, password, email, questions }) => {
+    const result = await verifyAddUser({
+      data: { user, password, email, questions },
+    });
+    if (!result.success) return result.error;
 
-        const result = await usersModel.addUser({ user, password, email })
+    return result.data;
+    // const result = await usersModel.addUser({ user, password, email })
 
-        return result
-    }
+    // return result
+  };
 
-    static seeUser = async( {user }) => {
-        const result = await usersModel.seeUser({ user })
+  static seeUser = async ({ user }) => {
+    const result = await usersModel.seeUser({ user });
 
-        if(!result) return { error: 'No existe el usuario'}
-        return result
-    }
+    if (!result) return { error: "No existe el usuario" };
+    return result;
+  };
 }
 
-export default users
+export default users;
