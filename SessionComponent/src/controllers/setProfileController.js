@@ -18,6 +18,8 @@ class setProfileController {
     const { user, profiles } = req.session;
     const { profile } = req.body;
 
+
+    //Preguntar esto, ya que si justo se remueve el peermiso de perfil, podria aun loguearse
     if (profiles.includes(profile)) {
       return this.#putProfile(req, res, profile)
     }

@@ -1,11 +1,11 @@
 import iPgHandler from "../../data/pg-handler-data/iPgHandler.js"
 class usersModel{
-    static addUser = async ({ user, password, email }) => { 
+    static addUser = async ({ user, password, email , questions, }) => { 
         const hashedPass = await iPgHandler.encriptar({ dato: password })
         
-        const result = await iPgHandler.executeQuery({ key: 'addUser', params: [user, hashedPass, email] })
+        // const result = await iPgHandler.executeQuery({ key: 'addUser', params: [user, hashedPass, email] })
         
-        return result
+        // return result
     }
 
     static seeUser = async ({ user }) => {
