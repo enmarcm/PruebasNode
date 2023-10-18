@@ -2,12 +2,18 @@ import importJSON from "../utils/importJson.js";
 import PermissionController from "./permissionController.js";
 import Security from "../components/Security.js";
 
-const configSecurity = importJSON({path: '../data/security-data/config-security.json'})
-const iSecurity = new Security({ controller: PermissionController, config: configSecurity})
+const configSecurity = importJSON({
+  path: "../data/security-data/config-security.json",
+});
+const iSecurity = new Security({
+  controller: PermissionController,
+  config: configSecurity,
+});
 
 class ToProcessController {
   static toProcessPost = async (req, res) => {
-    const { user, profile } = req.session;
+
+    const { profile } = req.session;
 
     const { area, method, object, params } = req.body;
 
@@ -28,7 +34,7 @@ class ToProcessController {
 
       res.send(resultMethod);
     } else {
-      res.send("jaja no puedes ejecutar");
+      res.send("No tienes permiso para ejecutar este metodo");
     }
   };
 }

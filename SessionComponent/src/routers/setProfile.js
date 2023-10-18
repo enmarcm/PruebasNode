@@ -4,6 +4,6 @@ import setProfileController from "../controllers/setProfileController.js";
 const setProfileRouter = Router();
 
 setProfileRouter.get("/", setProfileController.getProfiles);
-// setProfileRouter.post('/', setProfileController.setProfile)
+setProfileRouter.post('/', setProfileController.setProfile)
 
 export default setProfileRouter;

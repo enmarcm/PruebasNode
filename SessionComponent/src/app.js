@@ -8,7 +8,7 @@ import express from "express";
 import picocolors from "picocolors";
 import iSession from "./data/session-data/iSession.js";
 import { loginRouter, toProcessRouter, logoutRouter , setProfileRouter} from "./routers/dispatcher.js";
-import { midCors, midNotFound , midAuthLogin} from "./middlewares/middlewares.js";
+import { midCors, midNotFound , midAuthLogin, midNotProfile} from "./middlewares/middlewares.js";
 
 /**
  * Puerto en el que se iniciará el servidor.
@@ -29,8 +29,9 @@ app.use(iSession.loadSession);
 app.use("/login", midAuthLogin, loginRouter);
 app.use(iSession.midSessionExist);
 app.use("/setProfile", setProfileRouter)
-app.use("/toProcess", toProcessRouter);
 app.use("/logout", logoutRouter);
+app.use(midNotProfile)
+app.use("/toProcess", toProcessRouter);
 app.use(midNotFound);
 
 /**
