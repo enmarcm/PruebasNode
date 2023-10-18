@@ -1,18 +1,42 @@
-import iPgHandler from "../../data/pg-handler-data/iPgHandler.js"
-class usersModel{
-    static addUser = async ({ user, password, email , questions, }) => { 
-        const hashedPass = await iPgHandler.encriptar({ dato: password })
-        
-        // const result = await iPgHandler.executeQuery({ key: 'addUser', params: [user, hashedPass, email] })
-        
-        // return result
-    }
+import iPgHandler from "../../data/pg-handler-data/iPgHandler.js";
+class usersModel {
+  static addUser = async ({ user, password, email, questions, profiles }) => {
+    try {
+      const hashedPass = await iPgHandler.encriptar({ dato: password });
 
-    static seeUser = async ({ user }) => {
-        const [result] = await iPgHandler.executeQuery({ key: 'seeUser', params: [user] })
+      const addQuery = { key: "addUser", params: [user, hashedPass, email] };
+      const profilesQuery = profiles.map((elemento) => {
+        const obj = { key: "setProfileUser", params: [user, elemento] };
+        return obj;
+      });
+      const questionsQuery = questions.map((elemento) => {
+        const obj = {
+          key: "setQuestionUser",
+          params: [elemento.question, elemento.answer, user],
+        };
+        return obj;
+      });
 
-        return result
+      const result = await iPgHandler.transaction([
+        addQuery,
+        ...profilesQuery,
+        ...questionsQuery,
+      ]);
+
+      return result;
+    } catch (error) {
+      return error;
     }
+  };
+
+  static seeUser = async ({ user }) => {
+    const [result] = await iPgHandler.executeQuery({
+      key: "seeUser",
+      params: [user],
+    });
+
+    return result;
+  };
 }
 
-export default usersModel
+export default usersModel;

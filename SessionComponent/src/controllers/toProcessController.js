@@ -15,13 +15,13 @@ class ToProcessController {
 
     const { profile } = req.session;
 
-    const { area, method, object, params } = req.body;
+    const { area, method, object, params} = req.body;
 
     const permiso = await iSecurity.hasPermission({
       profile,
       area,
       object,
-      method,
+      method
     });
 
     if (permiso) {

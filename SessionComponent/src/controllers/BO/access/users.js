@@ -1,16 +1,17 @@
 import { verifyAddUser } from "../../../schemas/userSchema.js";
 import usersModel from "../../../models/BO/usersModel.js";
 class users {
-  addUser = async ({ user, password, email, questions }) => {
+  addUser = async ({ user, password, email, questions, profiles }) => {
     
-    const result = await verifyAddUser({
-      data: { user, password, email, questions },
+    const schema = await verifyAddUser({
+      data: { user, password, email, questions, profiles },
     });
-    if (!result.success) return result.error;
+    if (!schema.success) return schema.error;
 
-    // const result = await usersModel.addUser({ user, password, email })
+    const result = await usersModel.addUser({ user, password, email, questions, profiles })
 
-    // return result
+    if(result.severity === 'ERROR') return {error: "Ocurrio un error al crear el usuario"}
+    return {message: "Usuario creado correctamente"}
   };
 
   static seeUser = async ({ user }) => {

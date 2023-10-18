@@ -18,19 +18,20 @@ class setProfileController {
     const { user, profiles } = req.session;
     const { profile } = req.body;
 
-
-    //Preguntar esto, ya que si justo se remueve el peermiso de perfil, podria aun loguearse
     if (profiles.includes(profile)) {
       return this.#putProfile(req, res, profile)
     }
-
-    return { error: "no se pudo seleccionar el perfil" };
+    return res.json({ error: "El perfil seleccionado no es valido o ocurrio un error" });
   };
 
   static #putProfile = (req, res, profile) => {
-    delete req.body.profiles
-    req.session.profile = profile;
-    return res.json({ message: `Se selecciono el perfil ${req.session.profile}` }); 
+    const { user } = req.session
+    if (setProfileModel.hasProfile({ user, profile })) {
+      delete req.body.profiles
+      req.session.profile = profile;
+      return res.json({ message: `Se selecciono el perfil ${req.session.profile}` }); 
+    }
+    return res.json({message: "El perfil seleccionado no es valido"})
   }
 }
 

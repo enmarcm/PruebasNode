@@ -4,6 +4,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9_\-.]+$/;
 const QUESTIONS_REGEX = /^[a-zA-Z0-9./@\-_\s]+$/;
 
 const addUserSchema = z.object({
+  profiles: z.array(z.string().min(3).max(20)).min(1),
   user: z.string().min(5).max(10).regex(USERNAME_REGEX),
   email: z.string().email().toLowerCase(),
   password: z.string().min(8).max(20),
@@ -20,8 +21,7 @@ const addUserSchema = z.object({
       })
     )
     .min(2)
-    .max(6),
-  profile: z.array(z.string().min(3).max(10)).min(1)
+    .max(6)
 });
 
 export const verifyAddUser = async ({ data }) =>
