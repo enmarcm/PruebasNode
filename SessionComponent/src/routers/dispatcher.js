@@ -4,4 +4,14 @@ import toProcessRouter from "./toProcessRouter.js";
 import setProfileRouter from "./setProfile.js";
 import olvidoDatosRouter from "./olvidoDatos.js";
 
-export {loginRouter, toProcessRouter, olvidoDatosRouter,logoutRouter, setProfileRouter}
+/**
+ * Módulo que exporta los routers de la aplicación.
+ * @module dispatcher
+ */
+export {
+  loginRouter,
+  toProcessRouter,
+  olvidoDatosRouter,
+  logoutRouter,
+  setProfileRouter,
+};
