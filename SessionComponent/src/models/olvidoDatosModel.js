@@ -32,16 +32,35 @@ class olvidoDatosModel {
 
     const result = [preguntas[index1], preguntas[index2]];
     return result;
-    };
-    
-    static obtenerRespuestas = async ({ index = []}) => {
-        const respuestas = await iPgHandler.executeQuery({
-            key: "obtenerDosRespuestas",
-            params: [...index]
-        });
+  };
 
-        return respuestas
-    }
+  static obtenerRespuestas = async ({ index = [] }) => {
+    const respuestas = await iPgHandler.executeQuery({
+      key: "obtenerDosRespuestas",
+      params: [...index],
+    });
+
+    return respuestas;
+  };
+
+  static updatePassword = async ({ user, password }) => {
+    const hashedPass = await iPgHandler.encriptar({ dato: password });
+    const result = await iPgHandler.executeQuery({
+      key: "updatePassword",
+      params: [hashedPass, user],
+    });
+
+    return result;
+  };
+
+  static getMail = async ({ user }) => {
+    const [mail] = await iPgHandler.executeQuery({
+      key: "getMail",
+      params: [user],
+    });
+
+    return mail.em_user_web;
+  };
 }
 
 export default olvidoDatosModel;

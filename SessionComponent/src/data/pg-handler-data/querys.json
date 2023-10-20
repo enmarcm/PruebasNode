@@ -24,5 +24,7 @@
   "setProfileUser" : "INSERT INTO user_profile (id_user_web, id_profile) VALUES ((SELECT id_user_web FROM user_web WHERE us_user_web = $1),(SELECT id_profile FROM profile WHERE na_profile = $2))",
   "setQuestionUser": "INSERT INTO question (de_question, an_question, id_user_web) VALUES ($1, $2, (SELECT id_user_web FROM user_web WHERE us_user_web = $3))",
   "cargarTodasPreguntas": "SELECT id_question idQuestion,de_question question FROM question q INNER JOIN user_web uw ON uw.id_user_web = q.id_user_web WHERE uw.us_user_web = $1",
-  "obtenerDosRespuestas": "SELECT an_question answer FROM question WHERE id_question IN ($1,$2)"
+  "obtenerDosRespuestas": "SELECT an_question answer FROM question WHERE id_question IN ($1,$2)",
+  "updatePassword": "UPDATE user_web SET pa_user_web = $1 WHERE us_user_web = $2",
+  "getMail": "SELECT em_user_web FROM user_web WHERE us_user_web = $1"
 }

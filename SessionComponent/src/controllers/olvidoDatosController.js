@@ -3,6 +3,8 @@ import iSession from "../data/session-data/iSession.js";
 import LoginModel from "../models/loginModel.js";
 import olvidoDatosModel from "../models/olvidoDatosModel.js";
 import iPgHandler from "../data/pg-handler-data/iPgHandler.js";
+import crypto from "crypto";
+import iMailer from "../data/mailer-data/iMailer.js";
 
 class olvidoDatosController {
   static getOlvidoDatos = async (req, res) => {
@@ -52,46 +54,71 @@ class olvidoDatosController {
   };
 
   static postCargarPreguntas = async (req, res) => {
-    if (this.#verifySession(req, res)) return;
-    if (this.#verifyQuestions(req, res)) return;
+    try {
+      if (this.#verifySession(req, res)) return;
+      if (this.#verifyQuestions(req, res)) return;
 
-    const { user, questions } = req.session;
-    const { answers } = req.body;
+      const { user, questions } = req.session;
+      const { answers } = req.body;
 
-    //TODO: Hacer schema de answers
+      //TODO: Hacer schema de answers
 
-    if (!answers)
-      return res.json({
-        error:
-          "No se enviaron las respuestas o se enviaron en formato incorrecto",
-        example: {
-          answers: [{ answer: "Respuesta 1" }, { answer: "Respuesta 2" }],
-        },
+      if (!answers)
+        return res.json({
+          error:
+            "No se enviaron las respuestas o se enviaron en formato incorrecto",
+          example: {
+            answers: [{ answer: "Respuesta 1" }, { answer: "Respuesta 2" }],
+          },
+        });
+
+      const idQuestionMap = questions.map((question) => question.idquestion);
+      const hashRespuestas = await olvidoDatosModel.obtenerRespuestas({
+        index: idQuestionMap,
       });
 
-    const idQuestionMap = questions.map((question) => question.idquestion);
-    const hashRespuestas = await olvidoDatosModel.obtenerRespuestas({
-      index: idQuestionMap,
-    });
+      //TODO: MEJORAR TODO ESTO, ESTA MUY FEO Y ACOPLADO AQUI
+      for (const answer of answers) {
+        const dato = answer.answer.toLowerCase();
+        const validate =
+          (await iPgHandler.compararEncriptado({
+            dato,
+            hash: hashRespuestas[0].answer,
+          })) ||
+          (await iPgHandler.compararEncriptado({
+            dato,
+            hash: hashRespuestas[1].answer,
+          }));
 
-    for (const answer of answers) {
-      const dato = answer.answer.toLowerCase();
-      const validate =
-        (await iPgHandler.compararEncriptado({
-          dato,
-          hash: hashRespuestas[0].answer,
-        })) || 
-        (await iPgHandler.compararEncriptado({
-          dato,
-          hash: hashRespuestas[1].answer,
-        }));
+        if (!validate)
+          return res.json({ error: "Una o ambas respuestas son incorrectas" });
+      }
 
-      if (!validate)
-        return res.json({ error: "Una o ambas respuestas son incorrectas" });
+      iSession.destroySessionRecovery(req);
+
+      const randomPassword = crypto.randomBytes(8).toString("hex");
+
+      const emailUser = await olvidoDatosModel.getMail({ user });
+
+      await olvidoDatosModel.updatePassword({
+        user,
+        password: randomPassword,
+      });
+
+      const result = await iMailer.sendMail({
+        to: emailUser,
+        subject: "Nueva contraseña",
+        text: `Tu nueva contraseña es: ${randomPassword}`,
+      });
+      if (result.error) return res.send(result);
+
+      return res.json({ message: "Se ha enviado un correo con la contraseña" });
+    } catch (error) {
+      return res.json({
+        error: "Error en el servidor",
+        message: error.message,
+      });
     }
-
-    iSession.destroySessionRecovery(req)
-    return res.json({ error: "Las respuestas son correctas" });
   };
 
   static #verifySession = (req, res) => {
