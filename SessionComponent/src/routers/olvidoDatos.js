@@ -7,7 +7,7 @@ olvidoDatosRouter.get("/", olvidoDatosController.getOlvidoDatos)
 olvidoDatosRouter.post("/", olvidoDatosController.postOlvidoDatos)
 
 olvidoDatosRouter.get("/cargarPreguntas", olvidoDatosController.getCargarPreguntas)
-olvidoDatosRouter.post("/cargarPreguntas", ()=>{})
+olvidoDatosRouter.post("/cargarPreguntas", olvidoDatosController.postCargarPreguntas)
 
 olvidoDatosRouter.get("/enviarCorreo")
 
