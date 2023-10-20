@@ -60,11 +60,22 @@ class Session {
   };
 
   /**
+   * Destruye la sesión del usuario usada para recuperacion de información.
+   * @param {Object} req - Objeto de petición HTTP.
+   * @returns {boolean} - true si se destruyó la sesión, false si no se destruyó la sesión.
+   */
+  destroySessionRecovery = (req) => {
+    req.session.destroy();
+    return true;
+  };
+
+  /**
    * Verifica si una sesión ya existe en la petición.
    * @param {Object} req - Objeto de petición HTTP.
    * @returns {boolean} - true si la sesión existe, false si no existe.
    */
-  sessionExist = (req) => (req.session && req.session.user) ? true : false;
+  sessionExist = (req) =>
+    req.session && req.session.user && req.session.email ? true : false;
 
   /**
    * Middleware para verificar si existe una sesión en la petición.
