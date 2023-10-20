@@ -100,17 +100,8 @@ class olvidoDatosController {
 
       const emailUser = await olvidoDatosModel.getMail({ user });
 
-      await olvidoDatosModel.updatePassword({
-        user,
-        password: randomPassword,
-      });
-
-      const result = await iMailer.sendMail({
-        to: emailUser,
-        subject: "Nueva contraseña",
-        text: `Tu nueva contraseña es: ${randomPassword}`,
-      });
-      if (result.error) return res.send(result);
+      const change = await this.#changePass({ user, randomPassword, emailUser })
+      if (!change) return res.json({error: "Ha ocurrido un error al cambiar la pass o enviar el correo"});
 
       return res.json({ message: "Se ha enviado un correo con la contraseña" });
     } catch (error) {
@@ -119,6 +110,21 @@ class olvidoDatosController {
         message: error.message,
       });
     }
+  };
+
+  static #changePass = async ({ user, randomPassword, emailUser }) => {
+    const result = await iMailer.sendMail({
+      to: emailUser,
+      subject: "Nueva contraseña",
+      text: `Tu nueva contraseña es: ${randomPassword}`,
+    });
+    if (result.error) return false;
+
+    await olvidoDatosModel.updatePassword({
+      user,
+      password: randomPassword,
+    });
+    return true
   };
 
   static #verifySession = (req, res) => {
