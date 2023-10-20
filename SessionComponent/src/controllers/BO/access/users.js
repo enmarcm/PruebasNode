@@ -20,6 +20,14 @@ class users {
     if (!result) return { error: "No existe el usuario" };
     return result;
   };
+
+  // removeUser = async ({ user }) => {
+  //   const result = await usersModel.removeUser({ user });
+
+  //   if (result.severity === "ERROR")
+  //     return { error: "Ocurrio un error al eliminar el usuario" };
+  //   return { message: "Usuario eliminado correctamente" };
+  // }
 }
 
 export default users;
