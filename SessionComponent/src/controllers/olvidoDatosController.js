@@ -1,5 +1,6 @@
 import iSession from "../data/session-data/iSession.js";
-import LoginModel from "../models/LoginModel.js";
+import LoginModel from "../models/loginModel.js";
+import olvidoDatosModel from "../models/olvidoDatosModel.js";
 
 class olvidoDatosController {
   static getOlvidoDatos = async (req, res) => {
@@ -17,10 +18,15 @@ class olvidoDatosController {
 
   static postOlvidoDatos = async (req, res) => {
     const { user } = req.body;
+
     const verifyUser = await LoginModel.verifyUser({ user });
     if (!verifyUser) return res.json({ error: "El usuario no existe" });
 
-    req.session.questions = null;
+    const verifyBlock = await LoginModel.verifyBlock({ user });
+    if (verifyBlock) return res.json({ error: "El usuario esta bloqueado" });
+
+    const infoUser = {questions: [], user}
+    iSession.createSesion({req, infoUser})
 
     return res.redirect(303, "/olvidoDatos/cargarPreguntas");
   };
@@ -32,9 +38,17 @@ class olvidoDatosController {
           "No estas solicitando recuperar los datos, por lo que no puedes acceder a esta ruta",
       });
 
-    const preguntas = await LoginModel.getPreguntas();
-    //Luego entonces se debe de enviar el formulario con las preguntas
-    //Luego para enviar se deben usar el POST
+    const { user } = req.session;
+    const preguntas = await olvidoDatosModel.cargarPreguntas({ user });
+    req.session.questions = preguntas
+
+    const questions = preguntas.map((pregunta, i) => {
+      const obj = { question: pregunta.question }
+      return obj
+    });
+    
+    const objInfo = {message: "Responde las preguntas de seguridad usando el POST", questions}
+    res.json(objInfo)
   };
 }
 

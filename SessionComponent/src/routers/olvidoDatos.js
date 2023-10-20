@@ -6,7 +6,7 @@ const olvidoDatosRouter = Router();
 olvidoDatosRouter.get("/", olvidoDatosController.getOlvidoDatos)
 olvidoDatosRouter.post("/", olvidoDatosController.postOlvidoDatos)
 
-olvidoDatosRouter.get("/cargarPreguntas", ()=>{})
+olvidoDatosRouter.get("/cargarPreguntas", olvidoDatosController.getCargarPreguntas)
 olvidoDatosRouter.post("/cargarPreguntas", ()=>{})
 
 olvidoDatosRouter.get("/enviarCorreo")

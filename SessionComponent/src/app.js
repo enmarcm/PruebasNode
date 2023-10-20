@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(midCors);
 app.use(iSession.loadSession);
 app.use("/login", midAuthLogin, loginRouter);
-app.use("olvidoDatos", olvidoDatosRouter)
+app.use("/olvidoDatos", olvidoDatosRouter)
 app.use(iSession.midSessionExist);
 app.use("/setProfile", setProfileRouter)
 app.use("/logout", logoutRouter);

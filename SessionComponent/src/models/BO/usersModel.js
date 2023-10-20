@@ -9,10 +9,14 @@ class usersModel {
         const obj = { key: "setProfileUser", params: [user, elemento] };
         return obj;
       });
-      const questionsQuery = questions.map((elemento) => {
+      const questionsQuery = questions.map(async (elemento) => {
         const obj = {
           key: "setQuestionUser",
-          params: [elemento.question, elemento.answer, user],
+          params: [
+            elemento.question,
+            await iPgHandler.encriptar(elemento.answer),
+            user,
+          ],
         };
         return obj;
       });
