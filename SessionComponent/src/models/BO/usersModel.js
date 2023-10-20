@@ -9,22 +9,26 @@ class usersModel {
         const obj = { key: "setProfileUser", params: [user, elemento] };
         return obj;
       });
+
       const questionsQuery = questions.map(async (elemento) => {
         const obj = {
           key: "setQuestionUser",
           params: [
             elemento.question,
-            await iPgHandler.encriptar(elemento.answer),
+            await iPgHandler.encriptar({ dato: elemento.answer.toLowerCase() }),
             user,
           ],
         };
+
         return obj;
       });
+
+      const questionQueryFull = await Promise.all(questionsQuery);
 
       const result = await iPgHandler.transaction([
         addQuery,
         ...profilesQuery,
-        ...questionsQuery,
+        ...questionQueryFull,
       ]);
 
       return result;
