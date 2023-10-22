@@ -14,7 +14,9 @@ class LoginController {
   static verifyData = (req, res) => {
     const { user, password } = req.body;
     if (!user || !password)
-      return res.status(400).send("Faltan datos para ingresar sesión");
+      return res
+        .status(400)
+        .json({ error: "Faltan datos para ingresar sesión" });
   };
 
   /**
@@ -25,9 +27,14 @@ class LoginController {
    * @returns {Promise<Object>} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static verifyUser = async (req, res) => {
-    const { user } = req.body;
-    const userExist = await UserModel.verifyUser({ user });
-    if (!userExist) return res.status(400).send("El usuario no existe");
+    try {
+      const { user } = req.body;
+      const userExist = await UserModel.verifyUser({ user });
+      if (!userExist)
+        return res.status(400).json({ error: "Usuario no existe" });
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -38,8 +45,13 @@ class LoginController {
    * @returns {Promise<Object>} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static verifyBlock = async (req, res) => {
-    const userBlocked = await UserModel.verifyBlock({ user: req.body.user });
-    if (userBlocked) return res.status(400).send("Usuario bloqueado");
+    try {
+      const userBlocked = await UserModel.verifyBlock({ user: req.body.user });
+      if (userBlocked)
+        return res.status(400).json({ message: "Usuario bloqueado" });
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -50,19 +62,28 @@ class LoginController {
    * @returns {Promise<Object>} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static verifyPassword = async (req, res) => {
-    const { user, password } = req.body;
-    const passwordCorrect = await UserModel.verifyPassword({ user, password });
-
-    if (!passwordCorrect) {
-      await UserModel.disminuirIntentos({ user });
-      const intentos = await this.obtenerIntentos({
-        req,
+    try {
+      const { user, password } = req.body;
+      const passwordCorrect = await UserModel.verifyPassword({
+        user,
+        password,
       });
 
-      if (intentos === 0) return await this.bloquear(req, res);
-      return res
-        .status(400)
-        .send(`Contraseña incorrecta, te quedan ${intentos} intentos`);
+      if (!passwordCorrect) {
+        await UserModel.disminuirIntentos({ user });
+        const intentos = await this.obtenerIntentos({
+          req,
+        });
+
+        if (intentos === 0) return await this.bloquear(req, res);
+        return res
+          .status(400)
+          .json({
+            error: `Contraseña incorrecta, te quedan ${intentos} intentos`,
+          });
+      }
+    } catch (error) {
+      return { error };
     }
   };
 
@@ -76,9 +97,13 @@ class LoginController {
    * @returns {Promise<Object>} - Promesa que resuelve en un objeto con el resultado de la consulta.
    */
   static bloquear = async (req, res) => {
-    const { user } = req.body;
-    await UserModel.bloquear({ user });
-    return res.status(400).send("Usuario bloqueado");
+    try {
+      const { user } = req.body;
+      await UserModel.bloquear({ user });
+      return res.status(400).json({ error: "Usuario bloqueado" });
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -88,9 +113,13 @@ class LoginController {
    * @returns {Promise<number>} - Número de intentos restantes.
    */
   static obtenerIntentos = async ({ req }) => {
-    const { user } = req.body;
-    const intentos = await UserModel.verifyIntentos({ user });
-    return intentos.at_user_web;
+    try {
+      const { user } = req.body;
+      const intentos = await UserModel.verifyIntentos({ user });
+      return intentos.at_user_web;
+    } catch (error) {
+      return { error };
+    }
   };
 
   //* Desde aqui se manejan los middlewares.
@@ -104,14 +133,18 @@ class LoginController {
    * @returns {Promise<Object>} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static midAuth = async (req, res, next) => {
-    if(req.method === 'GET') return next()
-    if (iSession.sessionExist(req))
-      return res.status(400).send("Ya estás logueado");
-    if (this.verifyData(req, res)) return;
-    if (await this.verifyUser(req, res)) return;
-    if (await this.verifyBlock(req, res)) return;
-    if (await this.verifyPassword(req, res)) return;
-    return next();
+    try {
+      if (req.method === "GET") return next();
+      if (iSession.sessionExist(req))
+        return res.status(400).json({ error: "Ya estás logueado" });
+      if (this.verifyData(req, res)) return;
+      if (await this.verifyUser(req, res)) return;
+      if (await this.verifyBlock(req, res)) return;
+      if (await this.verifyPassword(req, res)) return;
+      return next();
+    } catch (error) {
+      return { error };
+    }
   };
 
   //* Desde aqui se manejan los endpoints desde los routers.
@@ -123,25 +156,31 @@ class LoginController {
    * @returns {void}
    */
   static loginPost = async (req, res) => {
-    const { user, password } = req.body;
-    await UserModel.restoreIntentos({ user });
+    try {
+      const { user, password } = req.body;
+      await UserModel.restoreIntentos({ user });
 
-    const datos = await UserModel.retornarDatos({
-      user,
-      password,
-    });
+      const datos = await UserModel.retornarDatos({
+        user,
+        password,
+      });
 
-    const infoUser = {
-      idUser: datos.idUser,
-      user: datos.user,
-      email: datos.email,
-    };
+      const infoUser = {
+        idUser: datos.idUser,
+        user: datos.user,
+        email: datos.email,
+      };
 
-    return iSession.createSesion({ req, infoUser })
-      ? res.redirect(303, "/setProfile")
-      : res
-          .status(400)
-          .send(`No se pudo crear la sesión para ${infoUser.user}`);
+      return iSession.createSesion({ req, infoUser })
+        ? res.redirect(303, "/setProfile")
+        : res
+            .status(400)
+            .json({
+              error: `No se pudo crear la sesión para ${infoUser.user}`,
+            });
+    } catch (error) {
+      return { error };
+    }
   };
 
   static loginGet = (req, res) => {

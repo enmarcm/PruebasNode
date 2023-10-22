@@ -16,7 +16,8 @@ class CryptManager {
       const datoEncriptado = await bcrypt.hash(dato, saltRounds);
       return datoEncriptado;
     } catch (error) {
-      return error;
+      console.error(error)
+      return {error};
     }
   };
 
@@ -34,7 +35,7 @@ class CryptManager {
       const resultado = await bcrypt.compare(dato, hash);
       return resultado;
     } catch (error) {
-      return error;
+      return {error};
     }
   };
 

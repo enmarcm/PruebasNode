@@ -1,8 +1,11 @@
 import iSecurity from "../data/security-data/iSecurity.js";
 import iSession from "../data/session-data/iSession.js";
+
 class HomeController {
+
   static getHome = (req, res) => {
-    if (!iSession.sessionExist(req))
+    try {
+      if (!iSession.sessionExist(req))
       return res.json({ error: "No hay una sesion iniciada" });
 
     const { profile } = req.session;
@@ -14,6 +17,9 @@ class HomeController {
     };
 
     return res.json(json);
+    } catch (error) {
+      return {error}
+    }
   };
 }
 

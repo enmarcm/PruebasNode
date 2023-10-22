@@ -42,7 +42,7 @@ class PgHandler {
       const { rows } = await this.pool.query(query, params);
       return rows;
     } catch (error) {
-      return error;
+      return {error};
     }
   };
 
@@ -55,7 +55,7 @@ class PgHandler {
     try {
       return await this.pool.connect();
     } catch (error) {
-      return error;
+      return {error};
     }
   };
 
@@ -68,7 +68,7 @@ class PgHandler {
     try {
       await this.pool.release();
     } catch (error) {
-      return error;
+      return {error};
     }
   };
 
@@ -90,7 +90,7 @@ class PgHandler {
       return result;
     } catch (error) {
       await client.query("ROLLBACK");
-      return error;
+      return {error};
     } finally {
       await client.release();
     }

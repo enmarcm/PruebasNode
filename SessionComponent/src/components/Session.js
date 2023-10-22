@@ -85,7 +85,7 @@ class Session {
    */
   midSessionExist = (req, res, next) => {
     if (this.sessionExist(req)) return next();
-    return res.status(401).send("No tienes sesion activa");
+    return res.status(401).json({ error: "No tienes sesion activa" });
   };
 
   /**
@@ -96,13 +96,17 @@ class Session {
    * @returns {boolean} - true si se actualizó la sesión, false si no se actualizó la sesión.
    */
   updateSession = ({ req, infoUser }) => {
-    if (!this.sessionExist(req)) return false;
+    try {
+      if (!this.sessionExist(req)) return false;
 
-    for (const key in infoUser) {
-      req.session[key] = infoUser[key];
+      for (const key in infoUser) {
+        req.session[key] = infoUser[key];
+      }
+
+      return true;
+    } catch (error) {
+      return { error };
     }
-
-    return true;
   };
 }
 

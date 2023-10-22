@@ -2,7 +2,8 @@ import UserModel from "../models/userModel.js";
 
 class setProfileController {
   static getProfiles = async (req, res) => {
-    const { user } = req.session;
+    try {
+      const { user } = req.session;
     const profiles = await UserModel.getProfiles({ user });
 
     const profilesMap = profiles.map((e) => e.na_profile);
@@ -16,11 +17,15 @@ class setProfileController {
       message: "Selecciona uno de los perfiles disponibles",
       profiles: profilesMap,
     }
-    return res.send(objSend);
+    return res.json(objSend);
+    } catch (error) {
+      return {error}
+    }
   };
 
   static setProfile = async (req, res) => {
-    const { profiles } = req.session;
+    try {
+      const { profiles } = req.session;
     const { profile } = req.body;
 
     if (profiles.includes(profile)) {
@@ -29,6 +34,9 @@ class setProfileController {
     return res.json({
       error: "El perfil seleccionado no es valido o ocurrio un error",
     });
+    } catch (error) {
+      return {error}
+    }
   };
 
   static #putProfile = (req, res, profile) => {
@@ -41,7 +49,7 @@ class setProfileController {
       // });
       return res.redirect(303, "/home");
     }
-    return res.json({ message: "El perfil seleccionado no es valido" });
+    return res.json({ error: "El perfil seleccionado no es valido" });
   };
 }
 

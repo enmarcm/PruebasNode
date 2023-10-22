@@ -5,24 +5,28 @@ import CryptManager from "../components/CryptManager.js";
 
 class olvidoDatosController {
   static #changePass = async ({ user, randomPassword, emailUser }) => {
-    const result = await iMailer.sendMail({
-      to: emailUser,
-      subject: "Nueva contraseña",
-      text: `Tu nueva contraseña es: ${randomPassword}`,
-    });
-    if (result.error) return false;
+    try {
+      const result = await iMailer.sendMail({
+        to: emailUser,
+        subject: "Nueva contraseña",
+        text: `Tu nueva contraseña es: ${randomPassword}`,
+      });
+      if (result.error) return false;
 
-    await UserModel.updatePassword({
-      user,
-      password: randomPassword,
-    });
-    return true;
+      await UserModel.updatePassword({
+        user,
+        password: randomPassword,
+      });
+      return true;
+    } catch (error) {
+      return { error };
+    }
   };
 
   static #verifySession = (req, res) => {
     if (iSession.sessionExist(req))
       return res.json({
-        message:
+        error:
           "Tienes una sesion activa, debes desloguearte para poder recuperar los datos",
       });
   };
@@ -51,7 +55,7 @@ class olvidoDatosController {
     return result;
   };
 
-  static getOlvidoDatos = async (req, res) => {
+  static getOlvidoDatos = (req, res) => {
     if (this.#verifySession(req, res)) return;
 
     return res.json({
@@ -61,42 +65,50 @@ class olvidoDatosController {
   };
 
   static postOlvidoDatos = async (req, res) => {
-    if (this.#verifySession(req, res)) return;
+    try {
+      if (this.#verifySession(req, res)) return;
 
-    const { user } = req.body;
+      const { user } = req.body;
 
-    const verifyUser = await UserModel.verifyUser({ user });
-    if (!verifyUser) return res.json({ error: "El usuario no existe" });
+      const verifyUser = await UserModel.verifyUser({ user });
+      if (!verifyUser) return res.json({ error: "El usuario no existe" });
 
-    const verifyBlock = await UserModel.verifyBlock({ user });
-    if (verifyBlock) return res.json({ error: "El usuario esta bloqueado" });
+      const verifyBlock = await UserModel.verifyBlock({ user });
+      if (verifyBlock) return res.json({ error: "El usuario esta bloqueado" });
 
-    const infoUser = { questions: [], user };
-    iSession.createSesion({ req, infoUser });
+      const infoUser = { questions: [], user };
+      iSession.createSesion({ req, infoUser });
 
-    return res.redirect(303, "/olvidoDatos/cargarPreguntas");
+      return res.redirect(303, "/olvidoDatos/cargarPreguntas");
+    } catch (error) {
+      return { error };
+    }
   };
 
   static getCargarPreguntas = async (req, res) => {
-    if (this.#verifySession(req, res)) return;
-    if (this.#verifyQuestions(req, res)) return;
+    try {
+      if (this.#verifySession(req, res)) return;
+      if (this.#verifyQuestions(req, res)) return;
 
-    const { user } = req.session;
-    const preg = await UserModel.cargarPreguntas({ user });
+      const { user } = req.session;
+      const preg = await UserModel.cargarPreguntas({ user });
 
-    const preguntas = this.#seleccionarDosPreguntas({ preguntas: preg });
-    req.session.questions = preguntas;
+      const preguntas = this.#seleccionarDosPreguntas({ preguntas: preg });
+      req.session.questions = preguntas;
 
-    const questions = preguntas.map((pregunta) => {
-      const obj = { question: pregunta.question };
-      return obj;
-    });
+      const questions = preguntas.map((pregunta) => {
+        const obj = { question: pregunta.question };
+        return obj;
+      });
 
-    const objInfo = {
-      message: "Responde las preguntas de seguridad usando el POST",
-      questions,
-    };
-    res.json(objInfo);
+      const objInfo = {
+        message: "Responde las preguntas de seguridad usando el POST",
+        questions,
+      };
+      res.json(objInfo);
+    } catch (error) {
+      return { error };
+    }
   };
 
   static postCargarPreguntas = async (req, res) => {
@@ -160,7 +172,7 @@ class olvidoDatosController {
     } catch (error) {
       return res.json({
         error: "Error en el servidor",
-        message: error.message,
+        messageError: error.message,
       });
     }
   };

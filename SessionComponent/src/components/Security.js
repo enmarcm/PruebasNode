@@ -46,19 +46,23 @@ class Security {
    * @returns {Promise<void>}
    */
   loadPermissions = async () => {
-    // Si ya se cargaron los permisos, no hace nada
-    if (this.permissions.size > 0) return;
+    try {
+      // Si ya se cargaron los permisos, no hace nada
+      if (this.permissions.size > 0) return;
 
-    // Obtiene los permisos del controlador
-    const permisos = await this.controller.executeMethod({
-      method: "obtenerPermisos",
-      params: [],
-    });
+      // Obtiene los permisos del controlador
+      const permisos = await this.controller.executeMethod({
+        method: "obtenerPermisos",
+        params: [],
+      });
 
-    // Crea el mapa de permisos
-    this.#putPermissionsMap({ permisos });
+      // Crea el mapa de permisos
+      this.#putPermissionsMap({ permisos });
 
-    return;
+      return;
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -68,12 +72,16 @@ class Security {
    * @returns {Promise<boolean>} - Indica si los permisos ya se cargaron.
    */
   #verifyLoadPermissions = async () => {
-    if (this.permissions.size === 0) {
-      console.log("Esperando cargar servicios");
-      await this.loadPermissions();
-      return true;
+    try {
+      if (this.permissions.size === 0) {
+        console.log("Esperando cargar servicios");
+        await this.loadPermissions();
+        return true;
+      }
+      return;
+    } catch (error) {
+      return { error };
     }
-    return;
   };
 
   /**
@@ -111,9 +119,13 @@ class Security {
    * @returns {Promise<boolean>} - Indica si se recargaron los permisos.
    */
   #reloadPermission = async () => {
-    this.permissions.clear();
-    await this.loadPermissions();
-    return true;
+    try {
+      this.permissions.clear();
+      await this.loadPermissions();
+      return true;
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -127,15 +139,19 @@ class Security {
    * @returns {Promise<boolean>} - Indica si el usuario tiene permiso para ejecutar el método.
    */
   hasPermission = async ({ profile, area, object, method }) => {
-    // Verifica si los permisos ya se cargaron y los carga si no
-    await this.#verifyLoadPermissions();
+    try {
+      // Verifica si los permisos ya se cargaron y los carga si no
+      await this.#verifyLoadPermissions();
 
-    // Verifica si el usuario tiene permiso para ejecutar el método
-    const permiso = this.permissions
-      .get(profile)
-      [area][object].includes(method);
+      // Verifica si el usuario tiene permiso para ejecutar el método
+      const permiso = this.permissions
+        .get(profile)
+        [area][object].includes(method);
 
-    return permiso ? true : false;
+      return permiso ? true : false;
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -170,6 +186,7 @@ class Security {
       return methodResult;
     } catch (error) {
       console.error(`Existio un error ${error}`);
+      return { error };
     }
   };
 
@@ -185,34 +202,38 @@ class Security {
    * @returns {Promise<boolean>} - Indica si se estableció el permiso.
    */
   setPermission = async ({ area, object, method, profile, status }) => {
-    // Verifica si el método existe
-    const [methodExist] = await this.#verifyMethod({ area, object, method });
-    if (!methodExist) return false;
-    const idMethod = methodExist.id_method;
+    try {
+      // Verifica si el método existe
+      const [methodExist] = await this.#verifyMethod({ area, object, method });
+      if (!methodExist) return false;
+      const idMethod = methodExist.id_method;
 
-    // Verifica si el perfil existe
-    const [profileExist] = await this.#verifyProfile({ profile });
-    if (!profileExist) return false;
-    const idProfile = profileExist.id_profile;
+      // Verifica si el perfil existe
+      const [profileExist] = await this.#verifyProfile({ profile });
+      if (!profileExist) return false;
+      const idProfile = profileExist.id_profile;
 
-    // Establece el permiso en la base de datos
-    return status
-      ? await this.#addPermission({
-          object,
-          idProfile,
-          idMethod,
-          profile,
-          method,
-          area,
-        })
-      : await this.#removePermission({
-          object,
-          idProfile,
-          idMethod,
-          profile,
-          method,
-          area,
-        });
+      // Establece el permiso en la base de datos
+      return status
+        ? await this.#addPermission({
+            object,
+            idProfile,
+            idMethod,
+            profile,
+            method,
+            area,
+          })
+        : await this.#removePermission({
+            object,
+            idProfile,
+            idMethod,
+            profile,
+            method,
+            area,
+          });
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -225,11 +246,16 @@ class Security {
    * @returns {Promise<Object[]>} - Lista de métodos que coinciden con los parámetros.
    * @private
    */
-  #verifyMethod = async ({ area, object, method }) =>
-    await this.controller.executeMethod({
-      method: "verifyMethod",
-      params: { area, object, method },
-    });
+  #verifyMethod = async ({ area, object, method }) => {
+    try {
+      await this.controller.executeMethod({
+        method: "verifyMethod",
+        params: { area, object, method },
+      });
+    } catch (error) {
+      return { error };
+    }
+  };
 
   /**
    * Verifica si un perfil de usuario existe.
@@ -239,11 +265,16 @@ class Security {
    * @returns {Promise<Object[]>} - Lista de perfiles que coinciden con los parámetros.
    * @private
    */
-  #verifyProfile = async ({ profile }) =>
-    await this.controller.executeMethod({
-      method: "verifyProfile",
-      params: { profile },
-    });
+  #verifyProfile = async ({ profile }) => {
+    try {
+      await this.controller.executeMethod({
+        method: "verifyProfile",
+        params: { profile },
+      });
+    } catch (error) {
+      return { error };
+    }
+  };
 
   /**
    * Agrega un permiso para un usuario.
@@ -259,17 +290,21 @@ class Security {
    * @private
    */
   #addPermission = async (options) => {
-    const { idProfile, idMethod, profile, method, area, object } = options;
+    try {
+      const { idProfile, idMethod, profile, method, area, object } = options;
 
-    // Agrega el permiso en la base de datos
-    const execute = await this.controller.executeMethod({
-      method: "addPermission",
-      params: { idMethod, idProfile },
-    });
+      // Agrega el permiso en la base de datos
+      const execute = await this.controller.executeMethod({
+        method: "addPermission",
+        params: { idMethod, idProfile },
+      });
 
-    // Agrega el permiso al mapa de permisos
-    this.permissions.get(profile)[area][object].push(method);
-    return this.permissions.get(profile)[area][object].includes(method);
+      // Agrega el permiso al mapa de permisos
+      this.permissions.get(profile)[area][object].push(method);
+      return this.permissions.get(profile)[area][object].includes(method);
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -286,22 +321,26 @@ class Security {
    * @private
    */
   #removePermission = async (options) => {
-    const { idProfile, idMethod, profile, method, area, object } = options;
+    try {
+      const { idProfile, idMethod, profile, method, area, object } = options;
 
-    // Elimina el permiso de la base de datos
-    const execute = await this.controller.executeMethod({
-      method: "removePermission",
-      params: { idMethod, idProfile },
-    });
+      // Elimina el permiso de la base de datos
+      const execute = await this.controller.executeMethod({
+        method: "removePermission",
+        params: { idMethod, idProfile },
+      });
 
-    // Elimina el permiso del mapa de permisos
-    const indiceBorrar = this.permissions
-      .get(profile)
-      [area][object].indexOf(method);
+      // Elimina el permiso del mapa de permisos
+      const indiceBorrar = this.permissions
+        .get(profile)
+        [area][object].indexOf(method);
 
-    if (indiceBorrar === -1) return false;
-    this.permissions.get(profile)[area][object].splice(indiceBorrar, 1);
-    return execute;
+      if (indiceBorrar === -1) return false;
+      this.permissions.get(profile)[area][object].splice(indiceBorrar, 1);
+      return execute;
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -312,20 +351,24 @@ class Security {
    * @returns {Promise<boolean>} - Indica si se bloqueó el perfil.
    */
   blockProfile = async ({ profile }) => {
-    // Verifica si el perfil existe
-    const [profileExist] = await this.#verifyProfile({ profile });
-    if (!profileExist) return false;
-    const idProfile = profileExist.id_profile;
+    try {
+      // Verifica si el perfil existe
+      const [profileExist] = await this.#verifyProfile({ profile });
+      if (!profileExist) return false;
+      const idProfile = profileExist.id_profile;
 
-    // Bloquea el perfil en la base de datos
-    const execute = await this.controller.executeMethod({
-      method: "blockProfile",
-      params: { idProfile },
-    });
+      // Bloquea el perfil en la base de datos
+      const execute = await this.controller.executeMethod({
+        method: "blockProfile",
+        params: { idProfile },
+      });
 
-    // Borra los permisos del perfil del mapa de permisos
-    this.permissions.set(profile, {});
-    return execute;
+      // Borra los permisos del perfil del mapa de permisos
+      this.permissions.set(profile, {});
+      return execute;
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**
@@ -338,21 +381,25 @@ class Security {
    * @returns {Promise<boolean>} - Indica si se bloqueó el método.
    */
   blockMethod = async ({ area, object, method }) => {
-    // Verifica si el método existe
-    const [methodExist] = await this.#verifyMethod({ area, object, method });
-    if (!methodExist) return false;
-    const idMethod = methodExist.id_method;
+    try {
+      // Verifica si el método existe
+      const [methodExist] = await this.#verifyMethod({ area, object, method });
+      if (!methodExist) return false;
+      const idMethod = methodExist.id_method;
 
-    // Bloquea el método en la base de datos
-    const execute = await this.controller.executeMethod({
-      method: "blockMethod",
-      params: { idMethod },
-    });
+      // Bloquea el método en la base de datos
+      const execute = await this.controller.executeMethod({
+        method: "blockMethod",
+        params: { idMethod },
+      });
 
-    // Borra el método del mapa de permisos
-    this.#blockMethodMap({ method });
+      // Borra el método del mapa de permisos
+      this.#blockMethodMap({ method });
 
-    return execute;
+      return execute;
+    } catch (error) {
+      return { error };
+    }
   };
 
   /**

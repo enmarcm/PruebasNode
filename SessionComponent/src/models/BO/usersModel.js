@@ -26,7 +26,6 @@ class usersModel {
       });
 
       const questionQueryFull = await Promise.all(questionsQuery);
-
       const result = await iPgHandler.transaction([
         addQuery,
         ...profilesQuery,
@@ -35,17 +34,21 @@ class usersModel {
 
       return result;
     } catch (error) {
-      return error;
+      return {error};
     }
   };
 
   static seeUser = async ({ user }) => {
-    const [result] = await iPgHandler.executeQuery({
-      key: "seeUser",
-      params: [user],
-    });
-
-    return result;
+    try {
+      const [result] = await iPgHandler.executeQuery({
+        key: "seeUser",
+        params: [user],
+      });
+  
+      return result;
+    } catch (error) {
+      return {error}
+    }
   };
 }
 
