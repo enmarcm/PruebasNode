@@ -1,8 +1,10 @@
 import iPgHandler from "../../data/pg-handler-data/iPgHandler.js";
+import CryptManager from "../../components/CryptManager.js";
+
 class usersModel {
   static addUser = async ({ user, password, email, questions, profiles }) => {
     try {
-      const hashedPass = await iPgHandler.encriptar({ dato: password });
+      const hashedPass = await CryptManager.encriptar({ dato: password });
 
       const addQuery = { key: "addUser", params: [user, hashedPass, email] };
       const profilesQuery = profiles.map((elemento) => {
@@ -15,7 +17,7 @@ class usersModel {
           key: "setQuestionUser",
           params: [
             elemento.question,
-            await iPgHandler.encriptar({ dato: elemento.answer.toLowerCase() }),
+            await CryptManager.encriptar({ dato: elemento.answer.toLowerCase() }),
             user,
           ],
         };
