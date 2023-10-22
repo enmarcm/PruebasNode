@@ -1,12 +1,56 @@
-import { hash } from "bcrypt";
 import iSession from "../data/session-data/iSession.js";
-import LoginModel from "../models/loginModel.js";
-import olvidoDatosModel from "../models/olvidoDatosModel.js";
-import iPgHandler from "../data/pg-handler-data/iPgHandler.js";
-import crypto from "crypto";
 import iMailer from "../data/mailer-data/iMailer.js";
+import UserModel from "../models/userModel.js";
+import CryptManager from "../components/CryptManager.js";
 
 class olvidoDatosController {
+  static #changePass = async ({ user, randomPassword, emailUser }) => {
+    const result = await iMailer.sendMail({
+      to: emailUser,
+      subject: "Nueva contraseña",
+      text: `Tu nueva contraseña es: ${randomPassword}`,
+    });
+    if (result.error) return false;
+
+    await UserModel.updatePassword({
+      user,
+      password: randomPassword,
+    });
+    return true;
+  };
+
+  static #verifySession = (req, res) => {
+    if (iSession.sessionExist(req))
+      return res.json({
+        message:
+          "Tienes una sesion activa, debes desloguearte para poder recuperar los datos",
+      });
+  };
+
+  static #verifyQuestions = (req, res) => {
+    if (!req.session.questions)
+      return res.json({
+        error:
+          "No estas solicitando recuperar los datos, por lo que no puedes acceder a esta ruta",
+      });
+  };
+
+  static #seleccionarDosPreguntas = ({ preguntas } = []) => {
+    if (preguntas.length === 0)
+      return { error: "No hay preguntas para seleccionar" };
+
+    const index1 = Math.floor(Math.random() * preguntas.length);
+
+    let index2 = Math.floor(Math.random() * preguntas.length);
+
+    while (index2 === index1) {
+      index2 = Math.floor(Math.random() * preguntas.length);
+    }
+
+    const result = [preguntas[index1], preguntas[index2]];
+    return result;
+  };
+
   static getOlvidoDatos = async (req, res) => {
     if (this.#verifySession(req, res)) return;
 
@@ -21,10 +65,10 @@ class olvidoDatosController {
 
     const { user } = req.body;
 
-    const verifyUser = await LoginModel.verifyUser({ user });
+    const verifyUser = await UserModel.verifyUser({ user });
     if (!verifyUser) return res.json({ error: "El usuario no existe" });
 
-    const verifyBlock = await LoginModel.verifyBlock({ user });
+    const verifyBlock = await UserModel.verifyBlock({ user });
     if (verifyBlock) return res.json({ error: "El usuario esta bloqueado" });
 
     const infoUser = { questions: [], user };
@@ -38,7 +82,9 @@ class olvidoDatosController {
     if (this.#verifyQuestions(req, res)) return;
 
     const { user } = req.session;
-    const preguntas = await olvidoDatosModel.cargarPreguntas({ user });
+    const preg = await UserModel.cargarPreguntas({ user });
+
+    const preguntas = this.#seleccionarDosPreguntas({ preguntas: preg });
     req.session.questions = preguntas;
 
     const questions = preguntas.map((pregunta) => {
@@ -73,7 +119,7 @@ class olvidoDatosController {
         });
 
       const idQuestionMap = questions.map((question) => question.idquestion);
-      const hashRespuestas = await olvidoDatosModel.obtenerRespuestas({
+      const hashRespuestas = await UserModel.obtenerRespuestas({
         index: idQuestionMap,
       });
 
@@ -81,11 +127,11 @@ class olvidoDatosController {
       for (const answer of answers) {
         const dato = answer.answer.toLowerCase();
         const validate =
-          (await iPgHandler.compararEncriptado({
+          (await CryptManager.compararEncriptado({
             dato,
             hash: hashRespuestas[0].answer,
           })) ||
-          (await iPgHandler.compararEncriptado({
+          (await CryptManager.compararEncriptado({
             dato,
             hash: hashRespuestas[1].answer,
           }));
@@ -96,12 +142,19 @@ class olvidoDatosController {
 
       iSession.destroySessionRecovery(req);
 
-      const randomPassword = crypto.randomBytes(8).toString("hex");
+      const randomPassword = CryptManager.generarRandom();
 
-      const emailUser = await olvidoDatosModel.getMail({ user });
+      const emailUser = await UserModel.getMail({ user });
 
-      const change = await this.#changePass({ user, randomPassword, emailUser })
-      if (!change) return res.json({error: "Ha ocurrido un error al cambiar la pass o enviar el correo"});
+      const change = await this.#changePass({
+        user,
+        randomPassword,
+        emailUser,
+      });
+      if (!change)
+        return res.json({
+          error: "Ha ocurrido un error al cambiar la pass o enviar el correo",
+        });
 
       return res.json({ message: "Se ha enviado un correo con la contraseña" });
     } catch (error) {
@@ -110,37 +163,6 @@ class olvidoDatosController {
         message: error.message,
       });
     }
-  };
-
-  static #changePass = async ({ user, randomPassword, emailUser }) => {
-    const result = await iMailer.sendMail({
-      to: emailUser,
-      subject: "Nueva contraseña",
-      text: `Tu nueva contraseña es: ${randomPassword}`,
-    });
-    if (result.error) return false;
-
-    await olvidoDatosModel.updatePassword({
-      user,
-      password: randomPassword,
-    });
-    return true
-  };
-
-  static #verifySession = (req, res) => {
-    if (iSession.sessionExist(req))
-      return res.json({
-        message:
-          "Tienes una sesion activa, debes desloguearte para poder recuperar los datos",
-      });
-  };
-
-  static #verifyQuestions = (req, res) => {
-    if (!req.session.questions)
-      return res.json({
-        error:
-          "No estas solicitando recuperar los datos, por lo que no puedes acceder a esta ruta",
-      });
   };
 }
 
