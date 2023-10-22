@@ -1,4 +1,4 @@
-import LoginModel from "../models/loginModel.js";
+import UserModel from "../models/userModel.js";
 import iSession from "../data/session-data/iSession.js";
 
 /**
@@ -26,7 +26,7 @@ class LoginController {
    */
   static verifyUser = async (req, res) => {
     const { user } = req.body;
-    const userExist = await LoginModel.verifyUser({ user });
+    const userExist = await UserModel.verifyUser({ user });
     if (!userExist) return res.status(400).send("El usuario no existe");
   };
 
@@ -38,7 +38,7 @@ class LoginController {
    * @returns {Promise<Object>} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static verifyBlock = async (req, res) => {
-    const userBlocked = await LoginModel.verifyBlock({ user: req.body.user });
+    const userBlocked = await UserModel.verifyBlock({ user: req.body.user });
     if (userBlocked) return res.status(400).send("Usuario bloqueado");
   };
 
@@ -51,16 +51,34 @@ class LoginController {
    */
   static verifyPassword = async (req, res) => {
     const { user, password } = req.body;
-    const passwordCorrect = await LoginModel.verifyPassword({ user, password });
+    const passwordCorrect = await UserModel.verifyPassword({ user, password });
 
     if (!passwordCorrect) {
-      await LoginModel.disminuirIntentos({ user });
-      return res.status(400).send(
-        `Contraseña incorrecta, te quedan ${await this.obtenerIntentos({
-          req,
-        })} intentos`
-      );
+      await UserModel.disminuirIntentos({ user });
+      const intentos = await this.obtenerIntentos({
+        req,
+      });
+
+      if (intentos === 0) return await this.bloquear(req, res);
+      return res
+        .status(400)
+        .send(`Contraseña incorrecta, te quedan ${intentos} intentos`);
     }
+  };
+
+  /**
+   * Bloquea a un usuario en la base de datos.
+   * @async
+   * @static
+   * @param {Object} req - Objeto de solicitud HTTP.
+   * @param {Object} res - Objeto de respuesta HTTP.
+   * @param {string} req.body.user - Nombre de usuario a bloquear.
+   * @returns {Promise<Object>} - Promesa que resuelve en un objeto con el resultado de la consulta.
+   */
+  static bloquear = async (req, res) => {
+    const { user } = req.body;
+    await UserModel.bloquear({ user });
+    return res.status(400).send("Usuario bloqueado");
   };
 
   /**
@@ -71,7 +89,7 @@ class LoginController {
    */
   static obtenerIntentos = async ({ req }) => {
     const { user } = req.body;
-    const intentos = await LoginModel.verifyIntentos({ user });
+    const intentos = await UserModel.verifyIntentos({ user });
     return intentos.at_user_web;
   };
 
@@ -106,9 +124,9 @@ class LoginController {
    */
   static loginPost = async (req, res) => {
     const { user, password } = req.body;
-    await LoginModel.restoreIntentos({ user });
+    await UserModel.restoreIntentos({ user });
 
-    const datos = await LoginModel.retornarDatos({
+    const datos = await UserModel.retornarDatos({
       user,
       password,
     });
