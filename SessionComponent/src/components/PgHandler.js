@@ -1,5 +1,4 @@
 import Pool from "pg-pool";
-import bcrypt from "bcrypt";
 
 /**
  * Clase que maneja la conexión y ejecución de consultas a una base de datos PostgreSQLv usando Pg-Pool.
@@ -22,11 +21,6 @@ class PgHandler {
      * @type {Object}
      */
     this.querys = querys;
-    /**
-     * Número de rondas para la generación de saltos para la encriptación con bcrypt.
-     * @type {number}
-     */
-    this.saltRounds = 10;
     /**
      * Pool de conexiones a la base de datos.
      * @type {Pool}
@@ -99,39 +93,6 @@ class PgHandler {
       return error;
     } finally {
       await client.release();
-    }
-  };
-
-  /**
-   * Encripta un dato utilizando bcrypt.
-   * @async
-   * @param {Object} options - Opciones para la encriptación.
-   * @param {string} options.dato - Dato a encriptar.
-   * @returns {Promise<string>} - Dato encriptado.
-   */
-  encriptar = async ({ dato }) => {
-    try {
-      const datoEncriptado = await bcrypt.hash(dato, this.saltRounds);
-      return datoEncriptado;
-    } catch (error) {
-      return error;
-    }
-  };
-
-  /**
-   * Compara un dato con un hash encriptado utilizando bcrypt.
-   * @async
-   * @param {Object} options - Opciones para la comparación.
-   * @param {string} options.dato - Dato a comparar.
-   * @param {string} options.hash - Hash encriptado a comparar.
-   * @returns {Promise<boolean>} - Resultado de la comparación (true si son iguales, false si no lo son).
-   */
-  compararEncriptado = async ({ dato, hash }) => {
-    try {
-      const resultado = await bcrypt.compare(dato, hash);
-      return resultado;
-    } catch (error) {
-      return error;
     }
   };
 }
