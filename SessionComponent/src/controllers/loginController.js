@@ -104,7 +104,7 @@ class LoginController {
    * @returns {Promise<Object>} - Objeto de respuesta HTTP con el resultado de la operación.
    */
   static midAuth = async (req, res, next) => {
-    // if(req.method === 'GET') return next()
+    if(req.method === 'GET') return next()
     if (iSession.sessionExist(req))
       return res.status(400).send("Ya estás logueado");
     if (this.verifyData(req, res)) return;

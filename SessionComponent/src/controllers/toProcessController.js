@@ -1,14 +1,4 @@
-import importJSON from "../utils/importJson.js";
-import PermissionController from "./permissionController.js";
-import Security from "../components/Security.js";
-
-const configSecurity = importJSON({
-  path: "../data/security-data/config-security.json",
-});
-const iSecurity = new Security({
-  controller: PermissionController,
-  config: configSecurity,
-});
+import iSecurity from "../data/security-data/iSecurity.js";
 
 class ToProcessController {
   static toProcessPost = async (req, res) => {

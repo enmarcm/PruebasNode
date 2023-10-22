@@ -7,7 +7,7 @@
 import express from "express";
 import picocolors from "picocolors";
 import iSession from "./data/session-data/iSession.js";
-import { loginRouter, toProcessRouter, logoutRouter , setProfileRouter, olvidoDatosRouter} from "./routers/dispatcher.js";
+import { loginRouter, toProcessRouter, logoutRouter , setProfileRouter, olvidoDatosRouter, homeRouter} from "./routers/dispatcher.js";
 import { midCors, midNotFound , midAuthLogin, midNotProfile} from "./middlewares/middlewares.js";
 
 /**
@@ -29,6 +29,7 @@ app.use(iSession.loadSession);
 app.use("/login", midAuthLogin, loginRouter);
 app.use("/olvidoDatos", olvidoDatosRouter)
 app.use(iSession.midSessionExist);
+app.use("/home", homeRouter)
 app.use("/setProfile", setProfileRouter)
 app.use("/logout", logoutRouter);
 app.use(midNotProfile)

@@ -11,7 +11,12 @@ class setProfileController {
     if (profilesMap.length === 1) {
       return this.#putProfile(req, res, profilesMap[0]);
     }
-    return res.send(profilesMap);
+
+    const objSend = {
+      message: "Selecciona uno de los perfiles disponibles",
+      profiles: profilesMap,
+    }
+    return res.send(objSend);
   };
 
   static setProfile = async (req, res) => {
@@ -31,9 +36,10 @@ class setProfileController {
     if (UserModel.hasProfile({ user, profile })) {
       delete req.body.profiles;
       req.session.profile = profile;
-      return res.json({
-        message: `Se selecciono el perfil ${req.session.profile}`,
-      });
+      // return res.json({
+      //   message: `Se selecciono el perfil ${req.session.profile}`,
+      // });
+      return res.redirect(303, "/home");
     }
     return res.json({ message: "El perfil seleccionado no es valido" });
   };
