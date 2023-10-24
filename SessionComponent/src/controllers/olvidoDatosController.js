@@ -2,8 +2,11 @@ import iSession from "../data/session-data/iSession.js";
 import iMailer from "../data/mailer-data/iMailer.js";
 import UserModel from "../models/userModel.js";
 import CryptManager from "../components/CryptManager.js";
+import { verifyAnswerQuestion } from "../schemas/userSchema.js";
 
 class olvidoDatosController {
+  //* Metodos privados de las operaciones de la clase
+
   static #changePass = async ({ user, randomPassword, emailUser }) => {
     try {
       const result = await iMailer.sendMail({
@@ -55,6 +58,44 @@ class olvidoDatosController {
     return result;
   };
 
+  static #verifyAnswers = async ({ questions, answers }) => {
+    try {
+      const idQuestionMap = questions.map((question) => question.idquestion);
+      const hashRespuestas = await UserModel.obtenerRespuestas({
+        index: idQuestionMap,
+      });
+
+      for (const answer of answers) {
+        const dato = answer.answer.toLowerCase();
+        const validate =
+          (await CryptManager.compararEncriptado({
+            dato,
+            hash: hashRespuestas[0].answer,
+          })) ||
+          (await CryptManager.compararEncriptado({
+            dato,
+            hash: hashRespuestas[1].answer,
+          }));
+
+        if (!validate)
+          return { error: "Una o ambas respuestas son incorrectas" };
+      }
+    } catch (error) {
+      return { error };
+    }
+  };
+
+  static #notAnswers = () => {
+    return {
+      error:
+        "No se enviaron las respuestas o se enviaron en formato incorrecto",
+      example: {
+        answers: [{ answer: "Respuesta 1" }, { answer: "Respuesta 2" }],
+      },
+    };
+  };
+
+  //* Cada uno de los endpoints de olvidoDatos
   static getOlvidoDatos = (req, res) => {
     if (this.#verifySession(req, res)) return;
 
@@ -119,38 +160,13 @@ class olvidoDatosController {
       const { user, questions } = req.session;
       const { answers } = req.body;
 
-      //TODO: Hacer schema de answers
+      if (!answers) return res.json(this.#notAnswers());
 
-      if (!answers)
-        return res.json({
-          error:
-            "No se enviaron las respuestas o se enviaron en formato incorrecto",
-          example: {
-            answers: [{ answer: "Respuesta 1" }, { answer: "Respuesta 2" }],
-          },
-        });
+      const answerSchema = await verifyAnswerQuestion({ answers });
+      if (answerSchema?.error) return res.json(answerSchema);
 
-      const idQuestionMap = questions.map((question) => question.idquestion);
-      const hashRespuestas = await UserModel.obtenerRespuestas({
-        index: idQuestionMap,
-      });
-
-      //TODO: MEJORAR TODO ESTO, ESTA MUY FEO Y ACOPLADO AQUI
-      for (const answer of answers) {
-        const dato = answer.answer.toLowerCase();
-        const validate =
-          (await CryptManager.compararEncriptado({
-            dato,
-            hash: hashRespuestas[0].answer,
-          })) ||
-          (await CryptManager.compararEncriptado({
-            dato,
-            hash: hashRespuestas[1].answer,
-          }));
-
-        if (!validate)
-          return res.json({ error: "Una o ambas respuestas son incorrectas" });
-      }
+      const verifyAnswers = await this.#verifyAnswers({ questions, answers });
+      if (verifyAnswers?.error) return res.json(verifyAnswers);
 
       iSession.destroySessionRecovery(req);
 
@@ -174,6 +190,57 @@ class olvidoDatosController {
         error: "Error en el servidor",
         messageError: error.message,
       });
+    }
+  };
+
+  //* Endpoints de desbloquear
+  static getDesbloquear = async (req, res) => {
+    if (this.#verifySession(req, res)) return;
+
+    return res.json({
+      message:
+        "Estas en el GET para desbloquear, envia el username a desbloquear con el metodo POST de la siguiente manera:",
+      example: {
+        user: "username",
+      },
+    });
+  };
+  static postDesbloquear = async (req, res) => {
+    if (this.#verifySession(req, res)) return;
+
+    const { user } = req.body;
+    if (!(await UserModel.verifyBlock({ user })))
+      return res.json({ error: `El usuario ${user} no esta bloqueado` });
+
+    const infoUser = { questions: [], user };
+    iSession.createSesion({ req, infoUser });
+
+    return res.redirect(303, "/olvidoDatos/cargarPreguntas");
+  };
+
+  static postDesbloquearCargarPreguntas = async (req, res) => {
+    try {
+      if (this.#verifySession(req, res)) return;
+      if (this.#verifyQuestions(req, res)) return;
+
+      const { user, questions } = req.session;
+      const { answers } = req.body;
+
+      if (!answers) return res.json(this.#notAnswers());
+
+      const answerSchema = await verifyAnswerQuestion({ answers });
+      if (answerSchema?.error) return res.json(answerSchema);
+
+      const verifyAnswers = await this.#verifyAnswers({ questions, answers });
+      if (verifyAnswers?.error) return res.json(verifyAnswers);
+      iSession.destroySessionRecovery(req);
+
+      const result = await UserModel.desbloquear({ user });
+      if (result?.error) res.send({ error: "Error al desbloquear" });
+
+      return res.send({ message: "Usuario desbloqueado, vuelva a ingresar" });
+    } catch (error) {
+      return { error };
     }
   };
 }

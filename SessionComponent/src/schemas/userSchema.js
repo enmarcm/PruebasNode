@@ -41,6 +41,23 @@ const addUserSchema = z.object({
 });
 
 /**
+ * Esquema de validacion para responder una pregunta de seguridad.
+ * @typedef {Object} answerSchema
+ * @property {string} answer - La respuesta a la pregunta de seguridad.
+ */
+
+/**
+ * Esquema de validación para una respuesta a una pregunta de seguridad.
+ * @type {answerSchema}
+ */
+const answerSchema = z
+  .string()
+  .min(3)
+  .max(70)
+  .regex(QUESTIONS_REGEX)
+  .toLowerCase();
+
+/**
  * Verifica si los datos proporcionados cumplen con el esquema de validación para agregar un usuario.
  * @async
  * @param {Object} options - Un objeto que contiene los datos a validar.
@@ -65,6 +82,22 @@ export const verifyAddUser = async ({ data }) => {
 export const verifyUpdateUser = async ({ data }) => {
   try {
     return await addUserSchema.partial().safeParseAsync(data);
+  } catch (error) {
+    return { error };
+  }
+};
+
+
+/**
+ * Verifica si la respuesta proporcionada cumple con el esquema de validación para responder una pregunta de seguridad.
+ * @async
+ * @param {Object} options - Un objeto que contiene la respuesta a validar 
+ * @param {String} options.answer - La respuesta a validar
+ * @returns {Promise<{ success: boolean, data?: UserSchema, error?: z.ZodError }>} - Un objeto que indica si la validación fue exitosa o no. Si la validación fue exitosa, el objeto también contiene los datos validados. Si la validación no fue exitosa, el objeto también contiene un error que describe el problema.
+ */
+export const verifyAnswerQuestion = async ({ answer }) => {
+  try {
+    return await answerSchema.safeParseAsync(answer);
   } catch (error) {
     return { error };
   }

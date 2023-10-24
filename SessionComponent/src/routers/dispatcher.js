@@ -5,6 +5,7 @@ import setProfileRouter from "./setProfile.js";
 import olvidoDatosRouter from "./olvidoDatos.js";
 import homeRouter from "./home.js";
 import changePasswordRouter from "./changePassword.js";
+import desbloquearRouter from "./desbloquear.js";
 
 /**
  * Módulo que exporta los routers de la aplicación.
@@ -17,5 +18,6 @@ export {
   olvidoDatosRouter,
   logoutRouter,
   setProfileRouter,
-  changePasswordRouter
+  changePasswordRouter,
+  desbloquearRouter
 };
