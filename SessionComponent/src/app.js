@@ -8,7 +8,7 @@ import express from "express";
 import picocolors from "picocolors";
 import iSession from "./data/session-data/iSession.js";
 import { loginRouter, toProcessRouter, logoutRouter , setProfileRouter, changePasswordRouter, olvidoDatosRouter, homeRouter, desbloquearRouter} from "./routers/dispatcher.js";
-import { midCors, midNotFound , midAuthLogin, midNotProfile} from "./middlewares/middlewares.js";
+import { midCors, midNotFound , midAuthLogin, midNotProfile, cors} from "./middlewares/middlewares.js";
 
 /**
  * Puerto en el que se iniciará el servidor.
@@ -23,9 +23,10 @@ const PORT = process.env.PORT ?? 7878;
 const app = express();
 
 // Configuración de middlewares y routers.
-app.use(express.json());
 app.use(midCors);
+app.use(cors({credentials: true, origin: true}));
 app.use(iSession.loadSession);
+app.use(express.json());
 app.use("/login", midAuthLogin, loginRouter);
 app.use("/olvidoDatos", olvidoDatosRouter)
 app.use("/desbloquear", desbloquearRouter)

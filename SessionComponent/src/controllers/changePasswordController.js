@@ -2,7 +2,16 @@ import iSession from "../data/session-data/iSession.js";
 import UserModel from "../models/userModel.js";
 import { verifyUpdateUser } from "../schemas/userSchema.js";
 
+/**
+ * Clase que representa un controlador para cambiar la contraseña de un usuario.
+ */
 class changePasswordController {
+  /**
+   * Obtiene la página para cambiar la contraseña.
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Object} El objeto JSON con el mensaje y el ejemplo de formato de solicitud.
+   */
   static getChangePassword = (req, res) => {
     const { user } = req.session;
 
@@ -13,6 +22,14 @@ class changePasswordController {
       },
     });
   };
+
+  /**
+   * Cambia la contraseña del usuario.
+   * @async
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Promise<Object>} El objeto JSON con el mensaje de éxito o error.
+   */
   static postChangePassword = async (req, res) => {
     const { user } = req.session;
     const { claveActual } = req.body;
@@ -33,6 +50,12 @@ class changePasswordController {
     return res.redirect(303, "/changePassword/newPassword");
   };
 
+  /**
+   * Obtiene la página para ingresar la nueva contraseña.
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Object} El objeto JSON con el mensaje y el ejemplo de formato de solicitud.
+   */
   static getNewPassword = (req, res) => {
     const { user } = req.session;
 
@@ -44,6 +67,13 @@ class changePasswordController {
     });
   };
 
+  /**
+   * Actualiza la contraseña del usuario.
+   * @async
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Promise<Object>} El objeto JSON con el mensaje de éxito o error.
+   */
   static postNewPassword = async (req, res) => {
     const { user } = req.session;
     const { nuevaPassword } = req.body;
@@ -54,7 +84,7 @@ class changePasswordController {
       });
 
     const passwordValida = await verifyUpdateUser({
-      data: {password: nuevaPassword},
+      data: { password: nuevaPassword },
     });
     if (!passwordValida.success)
       return res.json({
@@ -68,7 +98,7 @@ class changePasswordController {
 
     if (result.error) return res.json({ error: result.error.message });
 
-    iSession.destroySession(req)
+    iSession.destroySession(req);
     return res.json({
       message:
         "Se actualizo la password correctamente, vuelva a iniciar sesion",

@@ -4,9 +4,20 @@ import UserModel from "../models/userModel.js";
 import CryptManager from "../components/CryptManager.js";
 import { verifyAnswerQuestion } from "../schemas/userSchema.js";
 
+/**
+ * Clase que representa un controlador para la recuperación de datos de usuario.
+ */
 class olvidoDatosController {
-  //* Metodos privados de las operaciones de la clase
-
+  /**
+   * Método privado para cambiar la contraseña del usuario y enviarla por correo electrónico.
+   * @async
+   * @param {Object} options - Las opciones para cambiar la contraseña.
+   * @param {string} options.user - El nombre de usuario del usuario.
+   * @param {string} options.randomPassword - La nueva contraseña generada aleatoriamente.
+   * @param {string} options.emailUser - El correo electrónico del usuario.
+   * @returns {Promise<boolean|Object>} True si la contraseña se cambió y se envió correctamente, de lo contrario, un objeto con un error.
+   * @private
+   */
   static #changePass = async ({ user, randomPassword, emailUser }) => {
     try {
       const result = await iMailer.sendMail({
@@ -26,22 +37,44 @@ class olvidoDatosController {
     }
   };
 
+  /**
+   * Método privado para verificar si hay una sesión activa.
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {boolean} True si hay una sesión activa, de lo contrario, false.
+   * @private
+   */
   static #verifySession = (req, res) => {
     if (iSession.sessionExist(req))
       return res.json({
         error:
           "Tienes una sesion activa, debes desloguearte para poder recuperar los datos",
       });
+    return false;
   };
 
+  /**
+   * Método privado para verificar si se han cargado las preguntas de seguridad.
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {boolean} True si se han cargado las preguntas de seguridad, de lo contrario, false.
+   * @private
+   */
   static #verifyQuestions = (req, res) => {
     if (!req.session.questions)
       return res.json({
         error:
           "No estas solicitando recuperar los datos, por lo que no puedes acceder a esta ruta",
       });
+    return false;
   };
 
+  /**
+   * Método privado para seleccionar dos preguntas de seguridad aleatorias.
+   * @param {Object[]} options.preguntas - Las preguntas de seguridad disponibles.
+   * @returns {Object[]|Object} Un arreglo con dos preguntas de seguridad seleccionadas aleatoriamente, o un objeto con un error si no hay preguntas disponibles.
+   * @private
+   */
   static #seleccionarDosPreguntas = ({ preguntas } = []) => {
     if (preguntas.length === 0)
       return { error: "No hay preguntas para seleccionar" };
@@ -58,6 +91,15 @@ class olvidoDatosController {
     return result;
   };
 
+  /**
+   * Método privado para verificar si las respuestas a las preguntas de seguridad son correctas.
+   * @async
+   * @param {Object} options - Las opciones para verificar las respuestas.
+   * @param {Object[]} options.questions - Las preguntas de seguridad.
+   * @param {Object[]} options.answers - Las respuestas a las preguntas de seguridad.
+   * @returns {Promise<Object|undefined>} Un objeto con un error si una o ambas respuestas son incorrectas, de lo contrario, undefined.
+   * @private
+   */
   static #verifyAnswers = async ({ questions, answers }) => {
     try {
       const idQuestionMap = questions.map((question) => question.idquestion);
@@ -85,6 +127,11 @@ class olvidoDatosController {
     }
   };
 
+  /**
+   * Método privado para indicar que no se enviaron las respuestas a las preguntas de seguridad o se enviaron en un formato incorrecto.
+   * @returns {Object} Un objeto con un error y un ejemplo de cómo enviar las respuestas correctamente.
+   * @private
+   */
   static #notAnswers = () => {
     return {
       error:
@@ -95,7 +142,12 @@ class olvidoDatosController {
     };
   };
 
-  //* Cada uno de los endpoints de olvidoDatos
+  /**
+   * Endpoint GET para la recuperación de datos de usuario.
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Object} - Objeto de respuesta HTTP con el mensaje de bienvenida.
+   */
   static getOlvidoDatos = (req, res) => {
     if (this.#verifySession(req, res)) return;
 
@@ -105,6 +157,13 @@ class olvidoDatosController {
     });
   };
 
+  /**
+   * Endpoint POST para la recuperación de datos de usuario.
+   * @async
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Promise<Object>} - Objeto de respuesta HTTP con redireccion o error.
+   */
   static postOlvidoDatos = async (req, res) => {
     try {
       if (this.#verifySession(req, res)) return;
@@ -126,6 +185,13 @@ class olvidoDatosController {
     }
   };
 
+  /**
+   * Endpoint GET para cargar las preguntas de seguridad.
+   * @async
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Promise<Object>} - Objeto HTTP con la informacion.
+   */
   static getCargarPreguntas = async (req, res) => {
     try {
       if (this.#verifySession(req, res)) return;
@@ -152,6 +218,13 @@ class olvidoDatosController {
     }
   };
 
+  /**
+   * Endpoint POST para cargar las respuestas a las preguntas de seguridad y cambiar la contraseña del usuario.
+   * @async
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Promise<Object>} - Objeto HTTP con la informacion.
+   */
   static postCargarPreguntas = async (req, res) => {
     try {
       if (this.#verifySession(req, res)) return;
@@ -193,7 +266,13 @@ class olvidoDatosController {
     }
   };
 
-  //* Endpoints de desbloquear
+  /**
+   * Endpoint GET para desbloquear un usuario.
+   * @async
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Promise<Object>} - Objeto HTTP con la informacion.
+   */
   static getDesbloquear = async (req, res) => {
     if (this.#verifySession(req, res)) return;
 
@@ -205,6 +284,14 @@ class olvidoDatosController {
       },
     });
   };
+
+  /**
+   * Endpoint POST para desbloquear un usuario.
+   * @async
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Promise<Object>} - Objeto HTTP con la informacion.
+   */
   static postDesbloquear = async (req, res) => {
     if (this.#verifySession(req, res)) return;
 
@@ -218,6 +305,13 @@ class olvidoDatosController {
     return res.redirect(303, "/olvidoDatos/cargarPreguntas");
   };
 
+  /**
+   * Endpoint POST para cargar las respuestas a las preguntas de seguridad y desbloquear un usuario.
+   * @async
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Promise<Object>} - Objeto HTTP con la informacion.
+   */
   static postDesbloquearCargarPreguntas = async (req, res) => {
     try {
       if (this.#verifySession(req, res)) return;
@@ -233,6 +327,7 @@ class olvidoDatosController {
 
       const verifyAnswers = await this.#verifyAnswers({ questions, answers });
       if (verifyAnswers?.error) return res.json(verifyAnswers);
+
       iSession.destroySessionRecovery(req);
 
       const result = await UserModel.desbloquear({ user });

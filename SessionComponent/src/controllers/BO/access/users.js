@@ -1,6 +1,21 @@
 import { verifyAddUser } from "../../../schemas/userSchema.js";
 import usersModel from "../../../models/BO/usersModel.js";
+
+/**
+ * Clase que representa un conjunto de métodos para manejar usuarios.
+ */
 class users {
+  /**
+   * Agrega un nuevo usuario a la base de datos.
+   * @async
+   * @param {Object} options - Las opciones para agregar el usuario.
+   * @param {string} options.user - El nombre de usuario.
+   * @param {string} options.password - La contraseña del usuario.
+   * @param {string} options.email - El correo electrónico del usuario.
+   * @param {Array} options.questions - Las preguntas de seguridad del usuario.
+   * @param {Array} options.profiles - Los perfiles del usuario.
+   * @returns {Promise<Object>} Un objeto con el resultado de la operación o un objeto con un error.
+   */
   addUser = async ({ user, password, email, questions, profiles }) => {
     try {
       const schema = await verifyAddUser({
@@ -28,6 +43,13 @@ class users {
     }
   };
 
+  /**
+   * Obtiene un usuario de la base de datos.
+   * @async
+   * @param {Object} options - Las opciones para obtener el usuario.
+   * @param {string} options.user - El nombre de usuario a obtener.
+   * @returns {Promise<Object>} Un objeto con el resultado de la operación o un objeto con un error.
+   */
   static seeUser = async ({ user }) => {
     try {
       const result = await usersModel.seeUser({ user });

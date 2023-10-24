@@ -1,6 +1,14 @@
 import PokemonModel from "../../../models/BO/pokemonModel.js";
 
+/**
+ * Clase que representa un conjunto de métodos para visualizar elementos de la base de datos de Pokemon.
+ */
 class views {
+  /**
+   * Obtiene todos los Pokemons de la base de datos.
+   * @async
+   * @returns {Promise<Object>} Un objeto con el resultado de la operación o un objeto con un error.
+   */
   static viewPokemons = async () => {
     try {
       const result = await PokemonModel.executeMethod({
@@ -14,6 +22,11 @@ class views {
     }
   };
 
+  /**
+   * Obtiene todos los ataques de la base de datos.
+   * @async
+   * @returns {Promise<Object>} Un objeto con el resultado de la operación o un objeto con un error.
+   */
   static viewAttacks = async () => {
     try {
       const result = await PokemonModel.executeMethod({
@@ -27,6 +40,11 @@ class views {
     }
   };
 
+  /**
+   * Obtiene todos los tipos de la base de datos.
+   * @async
+   * @returns {Promise<Object>} Un objeto con el resultado de la operación o un objeto con un error.
+   */
   static viewTypes = async () => {
     try {
       const result = await PokemonModel.executeMethod({
@@ -40,6 +58,13 @@ class views {
     }
   };
 
+  /**
+   * Obtiene un Pokemon de la base de datos.
+   * @async
+   * @param {Object} options - Las opciones para obtener el Pokemon.
+   * @param {string} options.name - El nombre del Pokemon a obtener.
+   * @returns {Promise<Object>} Un objeto con el resultado de la operación o un objeto con un error.
+   */
   static viewPokemon = async ({ name }) => {
     try {
       const result = await PokemonModel.executeMethod({
@@ -54,4 +79,4 @@ class views {
   };
 }
 
-export default views
+export default views;

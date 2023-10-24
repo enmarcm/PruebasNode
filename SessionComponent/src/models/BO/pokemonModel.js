@@ -1,6 +1,20 @@
 import iPgHandler from "../../data/pg-handler-data/iPgHandler.js";
 
+/**
+ * Clase que representa el modelo de datos para los Pokemones.
+ */
 class PokemonModel {
+  /**
+   * Agrega un nuevo Pokemon a la base de datos.
+   * @async
+   * @param {Object} options - Las opciones para agregar el Pokemon.
+   * @param {string} options.name - El nombre del Pokemon.
+   * @param {string} options.image - La imagen del Pokemon.
+   * @param {Array<string>} options.types - Los tipos del Pokemon.
+   * @param {Array<string>} options.attacks - Los ataques del Pokemon.
+   * @param {Array<string>} options.games - Los juegos en los que aparece el Pokemon.
+   * @returns {Promise<Object>} El objeto JSON con el resultado de la transacción o un mensaje de error.
+   */
   static addPokemon = async ({ name, image, types, attacks, games }) => {
     try {
       const pokemon = { key: "addPokemon", params: [name, image] };
@@ -30,6 +44,14 @@ class PokemonModel {
     }
   };
 
+  /**
+   * Ejecuta un método en la base de datos.
+   * @async
+   * @param {Object} options - Las opciones para ejecutar el método.
+   * @param {string} options.method - El nombre del método a ejecutar.
+   * @param {Array} options.params - Los parámetros para el método.
+   * @returns {Promise<Object>} El objeto JSON con el resultado de la ejecución del método o un mensaje de error.
+   */
   static executeMethod = async ({ method, params }) => {
     //*Importante, los params deben estar ordenados, tal cual como estan en el archivo de querys para que funcione
     //*El query debe llamarse igual al metodo para que funcione
@@ -49,4 +71,4 @@ class PokemonModel {
   };
 }
 
-export default PokemonModel
+export default PokemonModel;

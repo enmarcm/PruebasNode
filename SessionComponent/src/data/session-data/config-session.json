@@ -1,11 +1,10 @@
 {
-  "secret": "1234",
-  "resave": false,
-  "saveUninitialized": false,
+  "secret": "cookie",
+  "resave": true,
+  "saveUninitialized": true,
   "cookie": {
     "maxAge": 60000,
-    "httpOnly": false,
-    "secure": false
+    "name": "cookie-session"
   },
   "rolling": true
 }

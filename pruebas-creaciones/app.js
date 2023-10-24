@@ -1,40 +1,25 @@
-import PgHandler from "./pgHandler.js";
 import express from "express";
-const PORT = process.env.PORT ?? 3000;
+import session from "express-session";
+import cors from "cors";
+
+const PORT = process.env.PORT ?? 3005;
 const app = express();
 
-const mainEndPoint = (req, res) => res.send("Estas en el main");
+app.use(
+  session({
+    secret: "cookie",
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+      maxAge: 60000,
+      name: "cookie-session",
+    },
+    rolling: true,
+  })
+);
 
-app.get("/", mainEndPoint);
+app.use(cors())
 
-const esperando = () => console.log(`Esperando en el puerto ${PORT}`);
+app.post('/login', (req, res) => console.log(req.session))
 
-const objConfigPg = {
-  database: "mineria_datos",
-  user: "postgres",
-  password: "1234",
-  port: 5432,
-  ssl: false,
-  max: 20, // set pool max size to 20
-  idleTimeoutMillis: 1000, // close idle clients after 1 second
-  connectionTimeoutMillis: 1000, // return an error after 1 second if connection could not be established
-  maxUses: 7500, // close (and replace) a connection after it has been used 7500 times (see below for discussion)
-};
-
-const querys = {
-  select: "select * from producto",
-  selectWhere: `select * from producto where id_producto = $1`,
-};
-
-const handlerPG = new PgHandler({ config: objConfigPg, querys });
-
-(async () => {
-  const data = await handlerPG.executeQuery({
-    key: "select"
-  });
-
-    const nombresProducts = data.map(e => e.no_producto)
-    console.log(nombresProducts)
-})();
-
-app.listen(PORT, esperando);
+app.listen(PORT, ()=>console.log('esperando en el puerto '+ PORT));
