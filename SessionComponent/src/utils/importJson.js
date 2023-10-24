@@ -8,6 +8,12 @@ const require = createRequire(import.meta.url);
  * @param {string} options.path - La ruta del archivo JSON a importar.
  * @returns {Object} - El objeto JSON importado.
  */
-const importJson = ({ path }) => require(path);
+const importJson = ({ path }) => {
+    try {
+        return require(path)
+    } catch (error) {
+        return {error}
+    }
+};
 
 export default importJson;
