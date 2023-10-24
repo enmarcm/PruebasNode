@@ -47,8 +47,13 @@ const addUserSchema = z.object({
  * @param {Object} options.data - Los datos a validar.
  * @returns {Promise<{ success: boolean, data?: UserSchema, error?: z.ZodError }>} - Un objeto que indica si la validación fue exitosa o no. Si la validación fue exitosa, el objeto también contiene los datos validados. Si la validación no fue exitosa, el objeto también contiene un error que describe el problema.
  */
-export const verifyAddUser = async ({ data }) =>
-  await addUserSchema.safeParseAsync(data);
+export const verifyAddUser = async ({ data }) => {
+  try {
+    return await addUserSchema.safeParseAsync(data);
+  } catch (error) {
+    return { error };
+  }
+};
 
 /**
  * Verifica si los datos proporcionados cumplen con el esquema de validación para actualizar un usuario.
@@ -57,5 +62,10 @@ export const verifyAddUser = async ({ data }) =>
  * @param {Object} options.data - Los datos a validar.
  * @returns {Promise<{ success: boolean, data?: UserSchema, error?: z.ZodError }>} - Un objeto que indica si la validación fue exitosa o no. Si la validación fue exitosa, el objeto también contiene los datos validados. Si la validación no fue exitosa, el objeto también contiene un error que describe el problema.
  */
-export const verifyUpdateUser = async ({ data }) =>
-  await addUserSchema.partial().safeParseAsync(data);
+export const verifyUpdateUser = async ({ data }) => {
+  try {
+    return await addUserSchema.partial().safeParseAsync(data);
+  } catch (error) {
+    return { error };
+  }
+};
