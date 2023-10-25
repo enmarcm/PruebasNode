@@ -2,6 +2,7 @@ import midCors from "./midCors.js";
 import midNotFound from "./midNotFound.js";
 import midAuthLogin from "./midAuthLogin.js";
 import midNotProfile from "./midNotProfile.js";
+import midJson from "./midJson.js";
 import cors from "cors";
 
 /**
@@ -33,3 +34,9 @@ export { midNotProfile };
  * @type {Function}
  */
 export { cors };
+
+/**
+ * Middleware para verificar el schema de los JSON en el body.
+ * @type {Function}
+ */
+export { midJson };

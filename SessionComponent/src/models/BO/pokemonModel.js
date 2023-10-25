@@ -31,16 +31,16 @@ class PokemonModel {
 
       const gamesMap = games.map((game) => {
         const obj = { key: "addPokemonGames", params: [name, game] };
-        return;
+        return obj;
       });
 
       const obj = [pokemon, ...typesMap, ...attacksMap, ...gamesMap];
 
-      const result = await iPgHandler.transaction({ querys: obj });
+      const result = await iPgHandler.transaction(obj);
 
       return result;
     } catch (error) {
-      return { error };
+      return { error: error.message };
     }
   };
 

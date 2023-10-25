@@ -182,7 +182,7 @@ class Security {
       const metodoAEjecutar = obj[method] ?? moduleReady[method];
 
       // Ejecuta el método
-      const methodResult = await metodoAEjecutar(...params);
+      const methodResult = await metodoAEjecutar(...(typeof params === "object" ? [params] : params));
       return methodResult;
     } catch (error) {
       console.error(`Existio un error ${error}`);

@@ -50,12 +50,12 @@ const addUserSchema = z.object({
  * Esquema de validación para una respuesta a una pregunta de seguridad.
  * @type {answerSchema}
  */
-const answerSchema = z
-  .string()
-  .min(3)
-  .max(70)
-  .regex(QUESTIONS_REGEX)
-  .toLowerCase();
+const answerSchema =  z.array(
+    z.object({
+      answer: z.string().min(3).max(70).regex(QUESTIONS_REGEX).toLowerCase(),
+    })
+  ).min(2).max(5)
+
 
 /**
  * Verifica si los datos proporcionados cumplen con el esquema de validación para agregar un usuario.
@@ -87,11 +87,10 @@ export const verifyUpdateUser = async ({ data }) => {
   }
 };
 
-
 /**
  * Verifica si la respuesta proporcionada cumple con el esquema de validación para responder una pregunta de seguridad.
  * @async
- * @param {Object} options - Un objeto que contiene la respuesta a validar 
+ * @param {Object} options - Un objeto que contiene la respuesta a validar
  * @param {String} options.answer - La respuesta a validar
  * @returns {Promise<{ success: boolean, data?: UserSchema, error?: z.ZodError }>} - Un objeto que indica si la validación fue exitosa o no. Si la validación fue exitosa, el objeto también contiene los datos validados. Si la validación no fue exitosa, el objeto también contiene un error que describe el problema.
  */

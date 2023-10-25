@@ -3,7 +3,6 @@ import iMailer from "../data/mailer-data/iMailer.js";
 import UserModel from "../models/userModel.js";
 import CryptManager from "../components/CryptManager.js";
 import { verifyAnswerQuestion } from "../schemas/userSchema.js";
-
 /**
  * Clase que representa un controlador para la recuperación de datos de usuario.
  */
@@ -235,7 +234,7 @@ class olvidoDatosController {
 
       if (!answers) return res.json(this.#notAnswers());
 
-      const answerSchema = await verifyAnswerQuestion({ answers });
+      const answerSchema = await verifyAnswerQuestion({ answer: answers });
       if (answerSchema?.error) return res.json(answerSchema);
 
       const verifyAnswers = await this.#verifyAnswers({ questions, answers });
@@ -293,9 +292,14 @@ class olvidoDatosController {
    * @returns {Promise<Object>} - Objeto HTTP con la informacion.
    */
   static postDesbloquear = async (req, res) => {
-    if (this.#verifySession(req, res)) return;
-
+    try {
+      if (this.#verifySession(req, res)) return;
     const { user } = req.body;
+
+    if (!user) return res.json({ error: "No ingreso usuario" })
+    
+    if(!(await UserModel.verifyUser({ user }))) return res.json({error: "El usuario no existe"})
+
     if (!(await UserModel.verifyBlock({ user })))
       return res.json({ error: `El usuario ${user} no esta bloqueado` });
 
@@ -303,6 +307,9 @@ class olvidoDatosController {
     iSession.createSesion({ req, infoUser });
 
     return res.redirect(303, "/olvidoDatos/cargarPreguntas");
+    } catch (error) {
+      return res.json({error: `Ha ocurrido un error, ${error.message}`})
+    }
   };
 
   /**
@@ -322,7 +329,7 @@ class olvidoDatosController {
 
       if (!answers) return res.json(this.#notAnswers());
 
-      const answerSchema = await verifyAnswerQuestion({ answers });
+      const answerSchema = await verifyAnswerQuestion({ answer: answers });
       if (answerSchema?.error) return res.json(answerSchema);
 
       const verifyAnswers = await this.#verifyAnswers({ questions, answers });

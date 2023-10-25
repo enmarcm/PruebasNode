@@ -90,7 +90,7 @@ class PgHandler {
       return result;
     } catch (error) {
       await client.query("ROLLBACK");
-      return {error};
+      return {error: error.message};
     } finally {
       await client.release();
     }

@@ -69,7 +69,7 @@ class views {
     try {
       const result = await PokemonModel.executeMethod({
         method: "viewPokemon",
-        params: { name },
+        params: { name: name.toLowerCase() },
       });
       if (result.error) return { error: result.error };
       return result;

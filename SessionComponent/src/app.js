@@ -8,7 +8,7 @@ import express from "express";
 import picocolors from "picocolors";
 import iSession from "./data/session-data/iSession.js";
 import { loginRouter, toProcessRouter, logoutRouter , setProfileRouter, changePasswordRouter, olvidoDatosRouter, homeRouter, desbloquearRouter} from "./routers/dispatcher.js";
-import { midCors, midNotFound , midAuthLogin, midNotProfile, cors} from "./middlewares/middlewares.js";
+import { midCors, midNotFound , midAuthLogin, midNotProfile, cors, midJson} from "./middlewares/middlewares.js";
 
 /**
  * Puerto en el que se iniciará el servidor.
@@ -24,9 +24,10 @@ const app = express();
 
 // Configuración de middlewares y routers.
 app.use(midCors);
-app.use(cors({credentials: true, origin: true}));
+app.use(cors({credentials: true, origin: true})); // <-- Se agrego para Navegador WEB
 app.use(iSession.loadSession);
 app.use(express.json());
+app.use(midJson) // <-- Se agrego para manejar excepciones de JSON en formato incorrecto
 app.use("/login", midAuthLogin, loginRouter);
 app.use("/olvidoDatos", olvidoDatosRouter)
 app.use("/desbloquear", desbloquearRouter)

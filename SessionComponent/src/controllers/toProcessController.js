@@ -14,8 +14,8 @@ class ToProcessController {
   static toProcessPost = async (req, res) => {
     try {
       const { profile } = req.session;
-
       const { area, method, object, params } = req.body;
+      if(!area || !method || !object || !params) return res.json({ error: "Faltan datos para ejecutar el método" });
 
       const permiso = await iSecurity.hasPermission({
         profile,
@@ -37,9 +37,19 @@ class ToProcessController {
         res.json({ error: "No tienes permiso para ejecutar este método" });
       }
     } catch (error) {
-      return { error };
+      return res.json({ error });
     }
   };
+
+ /**
+   * Controlador del metodo GET de /toProcess.
+   * @param {Object} req - El objeto de solicitud.
+   * @param {Object} res - El objeto de respuesta.
+   * @returns {Object} El objeto JSON con el mensaje de informacion.
+   */
+  static toProcessGet = (req, res) => {
+    return res.json({message: "Estas en el GET de /toProcess, usa el POST para ejecutar metodos"})
+  }
 }
 
 export default ToProcessController;
