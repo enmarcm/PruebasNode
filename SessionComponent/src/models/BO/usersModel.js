@@ -42,11 +42,11 @@ class usersModel {
       });
 
       const questionQueryFull = await Promise.all(questionsQuery);
-      const result = await iPgHandler.transaction([
+      const result = await iPgHandler.transaction({querys: [
         addQuery,
         ...profilesQuery,
         ...questionQueryFull,
-      ]);
+      ]});
 
       return result;
     } catch (error) {

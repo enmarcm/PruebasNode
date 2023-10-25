@@ -78,7 +78,7 @@ class PgHandler {
    * @param {Array} querys - Un array de objetos que contienen la clave de la consulta y los parámetros de la consulta.
    * @returns {Promise} - Una promesa que se resuelve con el resultado de la transacción o se rechaza con un error.
    */
-  transaction = async (querys = []) => {
+  transaction = async ({querys = []}) => { 
     const client = await this.connect();
     try {
       await client.query("BEGIN");

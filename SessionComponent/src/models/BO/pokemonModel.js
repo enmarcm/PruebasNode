@@ -36,9 +36,10 @@ class PokemonModel {
 
       const obj = [pokemon, ...typesMap, ...attacksMap, ...gamesMap];
 
-      const result = await iPgHandler.transaction(obj);
+      const result = await iPgHandler.transaction({querys : obj});
 
-      return result;
+      if(result.command === 'COMMIT')
+      return {message: "Se inserto correctamente el pokemon"};
     } catch (error) {
       return { error: error.message };
     }
