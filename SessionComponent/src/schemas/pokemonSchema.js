@@ -28,6 +28,6 @@ export const verifyAddPokemon = async ({ data }) => {
     try {
         return await addPokemonSchema.safeParseAsync(data)
     } catch (error) {
-        return {error: error.message}
+        return {error}
     }
 }

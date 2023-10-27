@@ -15,7 +15,7 @@ class ToProcessController {
     try {
       const { profile } = req.session;
       const { area, method, object, params } = req.body;
-      if(!area || !method || !object || !params) return res.json({ error: "Faltan datos para ejecutar el método" });
+      if(!area || !method || !object) return res.json({ error: "Faltan datos para ejecutar el método" });
 
       const permiso = await iSecurity.hasPermission({
         profile,

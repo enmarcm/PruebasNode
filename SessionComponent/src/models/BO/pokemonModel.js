@@ -41,7 +41,8 @@ class PokemonModel {
       if(result.command === 'COMMIT')
       return {message: "Se inserto correctamente el pokemon"};
     } catch (error) {
-      return { error: error.message };
+      console.log(error)
+      return { error };
     }
   };
 

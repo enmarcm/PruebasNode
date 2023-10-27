@@ -97,6 +97,7 @@ class Security {
     // Coloca en el mapa de los permisos obtenidos del controlador
     const result = permisos.reduce((acc, permiso) => {
       const { profile, object, method, area } = permiso;
+      
       acc[profile] = acc[profile] || {};
       acc[profile][area] = acc[profile][area] || {};
       acc[profile][area][object] = acc[profile][area][object] || [];
