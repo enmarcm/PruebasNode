@@ -1,3 +1,6 @@
+/**
+ * @file adds.js Este archivo se encarga de manejar los métodos para agregar elementos de Pokemon a la BDD.
+ */
 import { verifyAddPokemon } from "../../../schemas/pokemonSchema.js";
 import PokemonModel from "../../../models/BO/pokemonModel.js";
 

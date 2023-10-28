@@ -1,3 +1,7 @@
+/**
+ * @file users.js Este archivo se encarga de manejar los usuarios con la BDD.
+ */
+
 import { verifyAddUser } from "../../../schemas/userSchema.js";
 import usersModel from "../../../models/BO/usersModel.js";
 

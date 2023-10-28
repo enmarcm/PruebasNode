@@ -1,3 +1,6 @@
+/**
+ * @file views.js Este archivo se encarga de manejar las vistas de Pokemon con la BDD.
+ */
 import PokemonModel from "../../../models/BO/pokemonModel.js";
 
 /**

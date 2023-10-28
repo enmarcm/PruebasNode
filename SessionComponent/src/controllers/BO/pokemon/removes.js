@@ -1,3 +1,6 @@
+/**
+ * @file removes.js Este archivo se encarga de manejar los métodos para eliminar elementos de Pokemon de la BDD.
+ */
 import PokemonModel from "../../../models/BO/pokemonModel.js";
 
 /**
